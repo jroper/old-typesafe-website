@@ -1,0 +1,748 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Clustering &mdash; Cloudy Akka</title>
+    <link rel="stylesheet" href="../_static/akka.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/print.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/theme_extras.js"></script>
+    <link rel="top" title="Cloudy Akka" href="../index.html" />
+    <link rel="next" title="Durable Mailboxes" href="durable-mailbox.html" />
+    <link rel="prev" title="Contents" href="../index.html" /> 
+  </head>
+  <body>
+      <div class="header">
+        <a href="../index.html">
+          <img class="logo" src="../_static/logo.png" alt="Logo"/>
+        </a>
+      </div>
+      <div class="topnav">
+      
+        <p>
+        «&#160;&#160;<a href="../index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="../index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="durable-mailbox.html">Durable Mailboxes</a>&#160;&#160;»
+        </p>
+
+      </div>
+      <div class="content">
+        
+        
+  <div class="section" id="clustering">
+<h1>Clustering<a class="headerlink" href="#clustering" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
+<p>The clustering module provides services like group membership, clustering, and
+failover of actors.</p>
+<p>The clustering module is based on ZooKeeper.</p>
+</div>
+<div class="section" id="starting-up-the-zookeeper-ensemble">
+<h2>Starting up the ZooKeeper ensemble<a class="headerlink" href="#starting-up-the-zookeeper-ensemble" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="embedded-zookeeper-server">
+<h3>Embedded ZooKeeper server<a class="headerlink" href="#embedded-zookeeper-server" title="Permalink to this headline">¶</a></h3>
+<p>For testing purposes the simplest way is to start up a single embedded ZooKeeper
+server. This can be done like this:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="k">import</span> <span class="nn">akka.cloud.cluster._</span>
+
+<span class="nc">Cluster</span><span class="o">.</span><span class="n">startLocalCluster</span><span class="o">(</span><span class="n">dataPath</span><span class="o">,</span> <span class="n">logPath</span><span class="o">,</span> <span class="n">port</span><span class="o">,</span> <span class="n">tickTime</span><span class="o">)</span>
+
+<span class="c1">// ...</span>
+
+<span class="nc">Cluster</span><span class="o">.</span><span class="n">shutdownLocalCluster</span>
+</pre></div>
+</div>
+<p>You can leave <tt class="docutils literal"><span class="pre">port</span></tt> and <tt class="docutils literal"><span class="pre">tickTime</span></tt> out which will then default to port 2181
+and tick time 5000 ms.</p>
+</div>
+<div class="section" id="zookeeper-server-ensemble">
+<h3>ZooKeeper server ensemble<a class="headerlink" href="#zookeeper-server-ensemble" title="Permalink to this headline">¶</a></h3>
+<p>For production you should always run an ensemble of at least 3 servers. The
+number should be quorum-based, e.g. 3, 5, 7 etc.</p>
+<p><img alt="More info" class="align-middle" src="../_images/more.png" /> Read more about this in the <a class="reference external" href="http://hadoop.apache.org/zookeeper/docs/r3.1.1/zookeeperAdmin.htm">ZooKeeper Installation and Admin Guide</a>.</p>
+<p>In the future Cloudy Akka Provisioning module will automate this.</p>
+</div>
+</div>
+<div class="section" id="creating-starting-and-stopping-a-cluster-node">
+<h2>Creating, starting and stopping a cluster node<a class="headerlink" href="#creating-starting-and-stopping-a-cluster-node" title="Permalink to this headline">¶</a></h2>
+<p>Once we have one or more ZooKeeper servers running we can create and start up a
+cluster node.</p>
+<div class="section" id="cluster-configuration">
+<h3>Cluster configuration<a class="headerlink" href="#cluster-configuration" title="Permalink to this headline">¶</a></h3>
+<p>Cluster is configured in the <tt class="docutils literal"><span class="pre">akka.cloud.cluster</span></tt> section in the <tt class="docutils literal"><span class="pre">akka.conf</span></tt>
+configuration file. Here you specify the default addresses to the ZooKeeper
+servers, timeouts, if compression should be on or off, and so on.</p>
+<div class="highlight-conf"><pre>akka {
+  cloud {
+    cluster {
+       zookeeper-server-addresses = "wallace:2181,gromit:2181"
+       remote-server-port = 2552
+       max-time-to-wait-until-connected = 5
+       session-timeout = 60
+       connection-timeout = 30
+       use-compression = on
+     }
+   }
+}</pre>
+</div>
+</div>
+<div class="section" id="creating-a-node">
+<h3>Creating a node<a class="headerlink" href="#creating-a-node" title="Permalink to this headline">¶</a></h3>
+<p>The first thing you need to do on each node is to create a new cluster
+node. That is done by invoking <tt class="docutils literal"><span class="pre">newNode</span></tt> on the <tt class="docutils literal"><span class="pre">Cluster</span></tt> object. Here is
+the signature with its default values:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="k">def</span> <span class="n">newNode</span><span class="o">(</span>
+  <span class="n">nodeAddress</span><span class="k">:</span> <span class="kt">NodeAddress</span><span class="o">,</span>
+  <span class="n">zkServerAddresses</span><span class="k">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="nc">Cluster</span><span class="o">.</span><span class="n">zooKeeperServers</span><span class="o">,</span>
+  <span class="n">serializer</span><span class="k">:</span> <span class="kt">ZkSerializer</span>  <span class="o">=</span> <span class="nc">Cluster</span><span class="o">.</span><span class="n">defaultSerializer</span><span class="o">,</span>
+  <span class="n">hostname</span><span class="k">:</span> <span class="kt">String</span>          <span class="o">=</span> <span class="nc">NetworkUtil</span><span class="o">.</span><span class="n">getLocalhostName</span><span class="o">,</span>
+  <span class="n">remoteServerPort</span><span class="k">:</span> <span class="kt">Int</span>     <span class="o">=</span> <span class="nc">Cluster</span><span class="o">.</span><span class="n">remoteServerPort</span><span class="o">)</span><span class="k">:</span> <span class="kt">ClusterNode</span>
+</pre></div>
+</div>
+<p>The <tt class="docutils literal"><span class="pre">NodeAddress</span></tt> defines the address for a node and has the following
+signature:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="k">final</span> <span class="k">case</span> <span class="k">class</span> <span class="nc">NodeAddress</span><span class="o">(</span>
+  <span class="n">clusterName</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span>
+  <span class="n">nodeName</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span>
+  <span class="n">hostname</span><span class="k">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="nc">Cluster</span><span class="o">.</span><span class="n">lookupLocalhostName</span><span class="o">,</span>
+  <span class="n">port</span><span class="k">:</span> <span class="kt">Int</span>        <span class="o">=</span> <span class="nc">Cluster</span><span class="o">.</span><span class="n">remoteServerPort</span><span class="o">)</span>
+</pre></div>
+</div>
+<p>You have to specify a cluster name and node name while the hostname and port for
+the remote server can be left out to use default values.</p>
+<p>Here is a an example of creating a node in which we only specify the node address
+and let the rest of the configuration options have their default values:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="k">import</span> <span class="nn">akka.cloud.cluster._</span>
+
+<span class="k">val</span> <span class="n">clusterNode</span> <span class="k">=</span> <span class="nc">Cluster</span><span class="o">.</span><span class="n">newNode</span><span class="o">(</span><span class="nc">NodeAddress</span><span class="o">(</span><span class="s">&quot;test-cluster&quot;</span><span class="o">,</span> <span class="s">&quot;node1&quot;</span><span class="o">))</span>
+</pre></div>
+</div>
+<p>You can also use the <tt class="docutils literal"><span class="pre">apply</span></tt> method on the <tt class="docutils literal"><span class="pre">Cluster</span></tt> object to create a new
+node in a more idiomatic Scala way:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="k">import</span> <span class="nn">akka.cloud.cluster._</span>
+
+<span class="k">val</span> <span class="n">clusterNode</span> <span class="k">=</span> <span class="nc">Cluster</span><span class="o">(</span><span class="nc">NodeAddress</span><span class="o">(</span><span class="s">&quot;test-cluster&quot;</span><span class="o">,</span> <span class="s">&quot;node1&quot;</span><span class="o">))</span>
+</pre></div>
+</div>
+<p>The <tt class="docutils literal"><span class="pre">NodeAddress</span></tt> defines the name of the node and the name of cluster. This
+allows you to have multiple clusters running in parallel in isolation,
+not aware of each other.</p>
+<p>The other parameters to know are:</p>
+<blockquote>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">zkServerAddresses</span></tt> &#8211; a list of the ZooKeeper servers to connect to,
+default is &#8220;localhost:2181&#8221;</li>
+<li><tt class="docutils literal"><span class="pre">serializer</span></tt> &#8211; the serializer to use when serializing configuration data
+into the cluster. Default is <tt class="docutils literal"><span class="pre">Cluster.defaultSerializer</span></tt> which is using Java
+serialization</li>
+<li><tt class="docutils literal"><span class="pre">hostname</span></tt> &#8211; the hostname to use for the node</li>
+<li><tt class="docutils literal"><span class="pre">remoteServerPort</span></tt> &#8211; the remote server port, for the internal remote server</li>
+</ul>
+</blockquote>
+</div>
+<div class="section" id="starting-a-node">
+<h3>Starting a node<a class="headerlink" href="#starting-a-node" title="Permalink to this headline">¶</a></h3>
+<p>Creating a node does not make it join the cluster. In order to do that you need
+to invoke the <tt class="docutils literal"><span class="pre">start</span></tt> method:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="k">val</span> <span class="n">clusterNode</span> <span class="k">=</span> <span class="nc">Cluster</span><span class="o">.</span><span class="n">newNode</span><span class="o">(</span><span class="nc">NodeAddress</span><span class="o">(</span><span class="s">&quot;test-cluster&quot;</span><span class="o">,</span> <span class="s">&quot;node1&quot;</span><span class="o">))</span>
+<span class="n">clusterNode</span><span class="o">.</span><span class="n">start</span>
+</pre></div>
+</div>
+<p>Or if you prefer to do it in one line of code:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="k">val</span> <span class="n">clusterNode</span> <span class="k">=</span> <span class="nc">Cluster</span><span class="o">.</span><span class="n">newNode</span><span class="o">(</span><span class="nc">NodeAddress</span><span class="o">(</span><span class="s">&quot;test-cluster&quot;</span><span class="o">,</span> <span class="s">&quot;node1&quot;</span><span class="o">)).</span><span class="n">start</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="stopping-a-node">
+<h3>Stopping a node<a class="headerlink" href="#stopping-a-node" title="Permalink to this headline">¶</a></h3>
+<p>To stop a node invoke <tt class="docutils literal"><span class="pre">stop</span></tt>:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="n">clusterNode</span><span class="o">.</span><span class="n">stop</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="querying-which-nodes-are-part-of-the-cluster">
+<h3>Querying which nodes are part of the cluster<a class="headerlink" href="#querying-which-nodes-are-part-of-the-cluster" title="Permalink to this headline">¶</a></h3>
+<p>You can query the cluster for which nodes have joined the cluster. This is done using the <a href="#id1"><span class="problematic" id="id2">``</span></a>membershipNodes``method:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="k">val</span> <span class="n">allNodesInCluster</span> <span class="k">=</span> <span class="n">clusterNode</span><span class="o">.</span><span class="n">membershipNodes</span>
+</pre></div>
+</div>
+<p>You can also query the &#8216;Cluster&#8217; object for which nodes are member of the a specific cluster:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="k">val</span> <span class="n">nodes</span> <span class="k">=</span> <span class="nc">Cluster</span> <span class="n">nodesInCluster</span> <span class="s">&quot;test-cluster&quot;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="resetting-the-cluster">
+<h3>Resetting the Cluster<a class="headerlink" href="#resetting-the-cluster" title="Permalink to this headline">¶</a></h3>
+<p>You can reset the whole cluster using the <tt class="docutils literal"><span class="pre">reset</span></tt> method on the <tt class="docutils literal"><span class="pre">Cluster</span></tt> object:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="nc">Cluster</span><span class="o">.</span><span class="n">reset</span>
+</pre></div>
+</div>
+<p>This shuts down all nodes and removes them from the cluster, it also removes all clustered actors and configuration data from the registry. Use this method with care.</p>
+<p>You can reset all the nodes in a specific cluster using the <tt class="docutils literal"><span class="pre">resetNodesInCluster</span></tt> method on the <tt class="docutils literal"><span class="pre">Cluster</span></tt> object:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="nc">Cluster</span> <span class="n">resetNodesInCluster</span> <span class="s">&quot;test-cluster&quot;</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="cluster-event-subscription">
+<h2>Cluster event subscription<a class="headerlink" href="#cluster-event-subscription" title="Permalink to this headline">¶</a></h2>
+<p>The cluster module supports subscribing to events happening in the cluster. For
+example, this can be very useful for knowing when a new nodes come and go,
+allowing you to dynamically resize the cluster. Here is an example:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="n">clusterNode</span><span class="o">.</span><span class="n">register</span><span class="o">(</span><span class="k">new</span> <span class="nc">ChangeListener</span> <span class="o">{</span>
+  <span class="k">override</span> <span class="k">def</span> <span class="n">nodeConnected</span><span class="o">(</span><span class="n">node</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span> <span class="n">thisNode</span><span class="k">:</span> <span class="kt">ClusterNode</span><span class="o">)</span> <span class="o">{</span>
+    <span class="c1">// ...</span>
+  <span class="o">}</span>
+
+  <span class="k">override</span> <span class="k">def</span> <span class="n">nodeDisconnected</span><span class="o">(</span><span class="n">node</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span> <span class="n">thisNode</span><span class="k">:</span> <span class="kt">ClusterNode</span><span class="o">)</span> <span class="o">{</span>
+    <span class="c1">// ...</span>
+  <span class="o">}</span>
+<span class="o">})</span>
+</pre></div>
+</div>
+<p>As parameters into these callbacks the cluster passes the name of the node that
+joined or left the cluster as well as the local node itself.</p>
+<p>Here is the full trait with all the callbacks you can implement:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="k">trait</span> <span class="nc">ChangeListener</span> <span class="o">{</span>
+  <span class="k">def</span> <span class="n">nodeConnected</span><span class="o">(</span><span class="n">node</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span> <span class="n">client</span><span class="k">:</span> <span class="kt">ClusterNode</span><span class="o">)</span> <span class="k">=</span> <span class="o">{}</span>
+  <span class="k">def</span> <span class="n">nodeDisconnected</span><span class="o">(</span><span class="n">node</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span> <span class="n">client</span><span class="k">:</span> <span class="kt">ClusterNode</span><span class="o">)</span> <span class="k">=</span> <span class="o">{}</span>
+  <span class="k">def</span> <span class="n">newLeader</span><span class="o">(</span><span class="n">name</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span> <span class="n">client</span><span class="k">:</span> <span class="kt">ClusterNode</span><span class="o">)</span> <span class="k">=</span> <span class="o">{}</span>
+  <span class="k">def</span> <span class="n">thisNodeNewSession</span><span class="o">(</span><span class="n">client</span><span class="k">:</span> <span class="kt">ClusterNode</span><span class="o">)</span> <span class="k">=</span> <span class="o">{}</span>
+  <span class="k">def</span> <span class="n">thisNodeConnected</span><span class="o">(</span><span class="n">client</span><span class="k">:</span> <span class="kt">ClusterNode</span><span class="o">)</span> <span class="k">=</span> <span class="o">{}</span>
+  <span class="k">def</span> <span class="n">thisNodeDisconnected</span><span class="o">(</span><span class="n">client</span><span class="k">:</span> <span class="kt">ClusterNode</span><span class="o">)</span> <span class="k">=</span> <span class="o">{}</span>
+  <span class="k">def</span> <span class="n">thisNodeExpired</span><span class="o">(</span><span class="n">client</span><span class="k">:</span> <span class="kt">ClusterNode</span><span class="o">)</span> <span class="k">=</span> <span class="o">{}</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+<p>Here is when each callback will be invoked:</p>
+<blockquote>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">nodeConnected</span></tt> &#8211; when a node joins the cluster</li>
+<li><tt class="docutils literal"><span class="pre">nodeDisconnected</span></tt> &#8211; when a node leaves the cluster</li>
+<li><tt class="docutils literal"><span class="pre">newLeader</span></tt> &#8211; when there has been a leader election and the new leader is elected</li>
+<li><tt class="docutils literal"><span class="pre">thisNodeNewSession</span></tt> &#8211; when the local node has created a new session to the cluster</li>
+<li><tt class="docutils literal"><span class="pre">thisNodeConnected</span></tt> &#8211; when a local node has joined the cluster</li>
+<li><tt class="docutils literal"><span class="pre">thisNodeDisconnected</span></tt> &#8211; when a local node has left the cluster</li>
+<li><tt class="docutils literal"><span class="pre">thisNodeExpired</span></tt> &#8211; when the local node&#8217;s session has expired</li>
+</ul>
+</blockquote>
+<p>If you are using this from Java then you need to use the &#8220;Java-friendly&#8221;
+<tt class="docutils literal"><span class="pre">ChangeListenerAdapter</span></tt> abstract class instead of the <tt class="docutils literal"><span class="pre">ChangeListener</span></tt>
+trait.</p>
+</div>
+<div class="section" id="clustered-actor-registry">
+<h2>Clustered Actor Registry<a class="headerlink" href="#clustered-actor-registry" title="Permalink to this headline">¶</a></h2>
+<p>You can cluster actors by storing them in the cluster by UUID. The actors will
+be serialized deeply (with or without its mailbox and pending messages) and put
+in a highly available storage. This actor can then be checked out on any other
+node, used there and then checked in again. The cluster will also take care of
+transparently migrating actors residing on a failed node onto another node on
+the cluster so that the application can continue working as if nothing happened.</p>
+<p>Let&#8217;s look at an example. First we create a simple Hello World actor. We also
+create a <tt class="docutils literal"><span class="pre">Format</span></tt> type class for serialization. For simplicity we are using
+plain Java serialization.</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="k">import</span> <span class="nn">akka.serialization._</span>
+<span class="k">import</span> <span class="nn">akka.actor._</span>
+
+<span class="nd">@serializable</span> <span class="k">class</span> <span class="nc">HelloActor</span> <span class="k">extends</span> <span class="nc">Actor</span> <span class="o">{</span>
+  <span class="k">private</span> <span class="k">var</span> <span class="n">count</span> <span class="k">=</span> <span class="mi">0</span>
+  <span class="n">self</span><span class="o">.</span><span class="n">id</span> <span class="k">=</span> <span class="s">&quot;service:hello&quot;</span>
+
+  <span class="k">def</span> <span class="n">receive</span> <span class="k">=</span> <span class="o">{</span>
+    <span class="k">case</span> <span class="s">&quot;hello&quot;</span> <span class="k">=&gt;</span>
+      <span class="n">count</span> <span class="k">=</span> <span class="n">count</span> <span class="o">+</span> <span class="mi">1</span>
+      <span class="n">self</span> <span class="n">reply</span> <span class="o">(</span><span class="s">&quot;world &quot;</span> <span class="o">+</span> <span class="n">count</span><span class="o">)</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="k">object</span> <span class="nc">BinaryFormats</span> <span class="o">{</span>
+  <span class="nd">@serializable</span> <span class="k">implicit</span> <span class="k">object</span> <span class="nc">HelloActorFormat</span>
+    <span class="k">extends</span> <span class="nc">SerializerBasedActorFormat</span><span class="o">[</span><span class="kt">HelloActor</span><span class="o">]</span> <span class="o">{</span>
+    <span class="k">val</span> <span class="n">serializer</span> <span class="k">=</span> <span class="nc">Serializer</span><span class="o">.</span><span class="nc">Java</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+<p><img alt="More info" class="align-middle" src="../_images/more.png" /> Read more about actor serialization in the <a class="reference external" href="http://doc.akka.io/serialization-scala">Akka Serialization
+Documentation</a>.</p>
+<p>Once we can serialize and deserialize the actor we have what we need in
+order to cluster the actor. We have four methods at our disposal:</p>
+<blockquote>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">store</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">remove</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">use</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">release</span></tt></li>
+</ul>
+</blockquote>
+</div>
+<div class="section" id="actoraddress">
+<h2>ActorAddress<a class="headerlink" href="#actoraddress" title="Permalink to this headline">¶</a></h2>
+<p>The <tt class="docutils literal"><span class="pre">ActorAddress</span></tt> is used to represent the address to a specific actor. All methods in the API that deals with actors works with <tt class="docutils literal"><span class="pre">ActorAddress</span></tt> and represents one of these identifiers:</p>
+<blockquote>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">actorUuid</span></tt> &#8211; the UUID for an actor; <tt class="docutils literal"><span class="pre">Actor.uuid</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">actorId</span></tt> &#8211; the ID for an actor; <tt class="docutils literal"><span class="pre">Actor.id</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">actorClassName</span></tt> &#8211; the class name of an actor; <tt class="docutils literal"><span class="pre">Actor.actorClassName</span></tt></li>
+</ul>
+</blockquote>
+<p>To create a <tt class="docutils literal"><span class="pre">ActorAddress</span></tt> you can create the it using named arguments like this:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="nc">ActorAddress</span><span class="o">(</span><span class="n">actorUuid</span>      <span class="k">=</span> <span class="n">uuid</span><span class="o">)</span>
+<span class="nc">ActorAddress</span><span class="o">(</span><span class="n">actorId</span>        <span class="k">=</span> <span class="n">id</span><span class="o">)</span>
+<span class="nc">ActorAddress</span><span class="o">(</span><span class="n">actorClassName</span> <span class="k">=</span> <span class="n">className</span><span class="o">)</span>
+</pre></div>
+</div>
+<p>Or, if you are using the API from Java (or prefer the syntaxt in Scala) then you can use the <tt class="docutils literal"><span class="pre">ActorAddress</span></tt> factory methods:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="nc">ActorAddress</span><span class="o">.</span><span class="n">forUuid</span><span class="o">(</span><span class="n">uuid</span><span class="o">)</span>
+<span class="nc">ActorAddress</span><span class="o">.</span><span class="n">forId</span><span class="o">(</span><span class="n">id</span><span class="o">)</span>
+<span class="nc">ActorAddress</span><span class="o">.</span><span class="n">forClassName</span><span class="o">(</span><span class="n">className</span><span class="o">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="store-and-remove">
+<h2>Store and Remove<a class="headerlink" href="#store-and-remove" title="Permalink to this headline">¶</a></h2>
+<p>The methods for storing an actor in the cluster and removing it from the cluster
+are:</p>
+<blockquote>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">store</span></tt> &#8211; clusters the actor by adding it to the clustered actor registry, available to any node in the cluster</li>
+<li><tt class="docutils literal"><span class="pre">remove</span></tt> &#8211; removes the actor from the clustered actor registry</li>
+</ul>
+</blockquote>
+<p>The <tt class="docutils literal"><span class="pre">store</span></tt> method also allows you to specify a replication factor. The
+<tt class="docutils literal"><span class="pre">replicationFactor</span></tt> defines the number of (randomly picked) nodes in the cluster that
+the stored actor should be automatically deployed to and instantiated  locally on (using
+<tt class="docutils literal"><span class="pre">use</span></tt>). If you leave this argument out then a replication factor of <tt class="docutils literal"><span class="pre">0</span></tt> will be used
+which means that the actor will only be stored in the clustered actor registry and not
+deployed anywhere.</p>
+<p>The last argument to the <tt class="docutils literal"><span class="pre">store</span></tt> method is the <tt class="docutils literal"><span class="pre">serializeMailbox</span></tt> which defines if
+the actor&#8217;s mailbox should be serialized along with the actor, stored in the cluster and
+deployed (if replication factor is set to more than <tt class="docutils literal"><span class="pre">0</span></tt>). If it should or not depends
+on your use-case. Default is <tt class="docutils literal"><span class="pre">false</span></tt></p>
+<p>This is the signatures for the <tt class="docutils literal"><span class="pre">store</span></tt> method (all different permutations of these methods are available for using from Java):</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="k">def</span> <span class="n">store</span><span class="o">[</span><span class="kt">T</span> <span class="k">&lt;:</span> <span class="kt">Actor</span><span class="o">]</span>
+  <span class="o">(</span><span class="n">actorRef</span><span class="k">:</span> <span class="kt">ActorRef</span><span class="o">,</span> <span class="n">replicationFactor</span><span class="k">:</span> <span class="kt">Int</span> <span class="o">=</span> <span class="mi">0</span><span class="o">,</span> <span class="n">serializeMailbox</span><span class="k">:</span> <span class="kt">Boolean</span> <span class="o">=</span> <span class="kc">false</span><span class="o">)</span>
+  <span class="o">(</span><span class="k">implicit</span> <span class="n">format</span><span class="k">:</span> <span class="kt">Format</span><span class="o">[</span><span class="kt">T</span><span class="o">])</span><span class="k">:</span> <span class="kt">ClusterNode</span>
+
+<span class="k">def</span> <span class="n">store</span><span class="o">[</span><span class="kt">T</span> <span class="k">&lt;:</span> <span class="kt">Actor</span><span class="o">]</span>
+  <span class="o">(</span><span class="n">actorClass</span><span class="k">:</span> <span class="kt">Class</span><span class="o">[</span><span class="kt">T</span><span class="o">],</span> <span class="n">replicationFactor</span><span class="k">:</span> <span class="kt">Int</span> <span class="o">=</span> <span class="mi">0</span><span class="o">,</span> <span class="n">serializeMailbox</span><span class="k">:</span> <span class="kt">Boolean</span> <span class="o">=</span> <span class="kc">false</span><span class="o">)</span>
+  <span class="o">(</span><span class="k">implicit</span> <span class="n">format</span><span class="k">:</span> <span class="kt">Format</span><span class="o">[</span><span class="kt">T</span><span class="o">])</span><span class="k">:</span> <span class="kt">ClusterNode</span>
+</pre></div>
+</div>
+<p>The <tt class="docutils literal"><span class="pre">implicit</span> <span class="pre">format:</span> <span class="pre">Format[T]</span></tt> might look scary but this argument is chosen for you and passed in automatically by the compiler as long as you have imported the serialization typeclass for the actor you are storing, e.g. the <tt class="docutils literal"><span class="pre">HelloActorFormat</span></tt> (defined above and imported in the sample below).</p>
+<p>Here is an example of how to use <tt class="docutils literal"><span class="pre">store</span></tt> to cluster an already
+created actor:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="k">import</span> <span class="nn">Actor._</span>
+<span class="k">import</span> <span class="nn">ActorSerialization._</span>
+<span class="k">import</span> <span class="nn">BinaryFormats._</span>
+
+<span class="k">val</span> <span class="n">clusterNode</span> <span class="k">=</span> <span class="nc">Cluster</span><span class="o">.</span><span class="n">newNode</span><span class="o">(</span><span class="nc">NodeAddress</span><span class="o">(</span><span class="s">&quot;test-cluster&quot;</span><span class="o">,</span> <span class="s">&quot;node1&quot;</span><span class="o">)).</span><span class="n">start</span>
+
+<span class="k">val</span> <span class="n">hello</span> <span class="k">=</span> <span class="n">actorOf</span><span class="o">[</span><span class="kt">HelloActor</span><span class="o">].</span><span class="n">start</span><span class="o">.</span><span class="n">asInstanceOf</span><span class="o">[</span><span class="kt">LocalActorRef</span><span class="o">]</span>
+
+<span class="k">val</span> <span class="n">serializeMailbox</span> <span class="k">=</span> <span class="kc">false</span>
+<span class="k">val</span> <span class="n">replicationFactor</span> <span class="k">=</span> <span class="mi">5</span>
+
+<span class="n">clusterNode</span> <span class="n">store</span> <span class="o">(</span><span class="n">hello</span><span class="o">,</span> <span class="n">serializeMailbox</span><span class="o">,</span> <span class="n">replicationFactor</span><span class="o">)</span>
+</pre></div>
+</div>
+<p>Here is an example of how to use <tt class="docutils literal"><span class="pre">store</span></tt> to cluster an actor by type:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="n">clusterNode</span> <span class="n">store</span> <span class="n">classOf</span><span class="o">[</span><span class="kt">HelloActor</span><span class="o">]</span>
+</pre></div>
+</div>
+<p>The <tt class="docutils literal"><span class="pre">remove</span></tt> method allows you to passing in a <tt class="docutils literal"><span class="pre">ActorAddress</span></tt>:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="n">cluster</span> <span class="n">remove</span> <span class="n">actorAddress</span>
+</pre></div>
+</div>
+<p>You can also remove an actor by type like this:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="n">cluster</span> <span class="n">remove</span> <span class="n">classOf</span><span class="o">[</span><span class="kt">HelloActor</span><span class="o">]</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="use-and-release">
+<h2>Use and Release<a class="headerlink" href="#use-and-release" title="Permalink to this headline">¶</a></h2>
+<p>The two methods for &#8220;checking out&#8221; an actor from the cluster for use and
+&#8220;checking it in&#8221; after use are:</p>
+<blockquote>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">use</span></tt> &#8211; &#8220;checks out&#8221; for use on a specific node, this will deserialize
+the actor and instantiated on the node it is being checked out on</li>
+<li><tt class="docutils literal"><span class="pre">release</span></tt> &#8211; &#8220;checks in&#8221; the actor after being done with it, important for
+the cluster bookkeeping</li>
+</ul>
+</blockquote>
+<p>The <tt class="docutils literal"><span class="pre">use</span></tt> and <tt class="docutils literal"><span class="pre">release</span></tt> methods allow you to pass an instance of <tt class="docutils literal"><span class="pre">ActorAddress</span></tt>. Here is an example:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="k">val</span> <span class="n">helloActor1</span> <span class="k">=</span> <span class="n">cluster</span> <span class="n">use</span> <span class="n">actorAddress</span>
+
+<span class="n">helloActor1</span> <span class="o">!</span> <span class="s">&quot;hello&quot;</span>
+<span class="n">helloActor2</span> <span class="o">!</span> <span class="s">&quot;hello&quot;</span>
+<span class="n">helloActor3</span> <span class="o">!</span> <span class="s">&quot;hello&quot;</span>
+
+<span class="n">cluster</span> <span class="n">release</span> <span class="n">actorAddress</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="ref-and-router">
+<h2>Ref and Router<a class="headerlink" href="#ref-and-router" title="Permalink to this headline">¶</a></h2>
+<p>The <tt class="docutils literal"><span class="pre">ref</span></tt> method is used to create an actor reference to a set of clustered
+(remote) actors defined with a spefific routing policy.</p>
+<p>This is the signature for <tt class="docutils literal"><span class="pre">ref</span></tt>:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="k">def</span> <span class="n">ref</span><span class="o">(</span><span class="n">actorAddress</span><span class="k">:</span> <span class="kt">ActorAddress</span><span class="o">,</span> <span class="n">router</span><span class="k">:</span> <span class="kt">Router.RouterType</span><span class="o">)</span><span class="k">:</span> <span class="kt">ActorRef</span>
+</pre></div>
+</div>
+<p>The final argument <tt class="docutils literal"><span class="pre">router</span></tt> defines a routing policy in which you have the
+following options:</p>
+<blockquote>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">Router.Direct</span></tt> &#8211; this policy means that the reference will only represent one single actor which it will use all the time when sending messages to the actor. If the query returns multiple actors then a single one is picked out randomly.</li>
+<li><tt class="docutils literal"><span class="pre">Router.Random</span></tt> &#8211; this policy will route the messages to a randomly picked actor in the set of actors in the cluster, returned by the query.</li>
+<li><tt class="docutils literal"><span class="pre">Router.RoundRobin</span></tt> &#8211; this policy will route the messages to the set of actors in the cluster returned by the query in a round-robin fashion. E.g. circle around the set of actors in order.</li>
+</ul>
+</blockquote>
+<p>Here is an example:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="c1">// Store the PongActor in the cluster and deploy it to 5 nodes in the cluster</span>
+<span class="n">localNode</span> <span class="n">store</span> <span class="o">(</span><span class="n">classOf</span><span class="o">[</span><span class="kt">PongActor</span><span class="o">],</span> <span class="mi">5</span><span class="o">)</span>
+
+<span class="c1">// Get a reference to all the pong actors through a round-robin router ActorRef</span>
+<span class="k">val</span> <span class="n">pong</span> <span class="k">=</span> <span class="n">localNode</span> <span class="n">ref</span> <span class="o">(</span><span class="n">actorAddress</span><span class="o">,</span> <span class="nc">Router</span><span class="o">.</span><span class="nc">RoundRobin</span><span class="o">)</span>
+
+<span class="c1">// Send it messages</span>
+<span class="n">pong</span> <span class="o">!</span> <span class="nc">Ping</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="actor-migration">
+<h2>Actor migration<a class="headerlink" href="#actor-migration" title="Permalink to this headline">¶</a></h2>
+<p>The cluster has mechanisms to either manually or automatically fail over all
+actors running on a node that have crashed to another node in the cluster. It
+will also make sure that all remote clients that are communicating these actors
+will automatically and transparently reconnect to the new host node.</p>
+<div class="section" id="automatic-actor-migration-on-fail-over">
+<h3>Automatic actor migration on fail-over<a class="headerlink" href="#automatic-actor-migration-on-fail-over" title="Permalink to this headline">¶</a></h3>
+<p>All actors are checked out with <tt class="docutils literal"><span class="pre">use</span></tt> are tracked by the cluster and will be
+automatically failed over to a new node in the cluster if the node that up and
+how is it is running on (using it) it crashes. Tracking will stop when the actor
+is checked in using <tt class="docutils literal"><span class="pre">release</span></tt>.</p>
+</div>
+<div class="section" id="manual-actor-migration">
+<h3>Manual actor migration<a class="headerlink" href="#manual-actor-migration" title="Permalink to this headline">¶</a></h3>
+<p>You can move an actor for one node to another using the <tt class="docutils literal"><span class="pre">migrate</span></tt> method. Here is the parameter list:</p>
+<blockquote>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">from</span></tt> &#8211; the address of the node migrating from (default is the address for the node you are invoking it on)</li>
+<li><tt class="docutils literal"><span class="pre">to</span></tt> &#8211; the address of the node migrating to</li>
+<li><tt class="docutils literal"><span class="pre">actorAddress</span></tt> &#8211; the <tt class="docutils literal"><span class="pre">ActorAddress</span></tt></li>
+</ul>
+</blockquote>
+<p>Here is an example:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="n">clusterNode</span> <span class="n">migrate</span> <span class="o">(</span>
+  <span class="nc">NodeAddress</span><span class="o">(</span><span class="s">&quot;test-cluster&quot;</span><span class="o">,</span> <span class="s">&quot;node1&quot;</span><span class="o">),</span>
+  <span class="nc">NodeAddress</span><span class="o">(</span><span class="s">&quot;test-cluster&quot;</span><span class="o">,</span> <span class="s">&quot;node2&quot;</span><span class="o">),</span>
+  <span class="n">actorAddress</span><span class="o">)</span>
+</pre></div>
+</div>
+<p>Here is an example using <tt class="docutils literal"><span class="pre">actorId</span></tt> and <tt class="docutils literal"><span class="pre">to</span></tt>, e.g. relying on the default value for <tt class="docutils literal"><span class="pre">from</span></tt> (this node):</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="n">clusterNode</span> <span class="n">migrate</span> <span class="o">(</span><span class="nc">NodeAddress</span><span class="o">(</span><span class="s">&quot;test-cluster&quot;</span><span class="o">,</span> <span class="s">&quot;node2&quot;</span><span class="o">),</span> <span class="n">actorAddress</span><span class="o">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="compute-grid">
+<h2>Compute Grid<a class="headerlink" href="#compute-grid" title="Permalink to this headline">¶</a></h2>
+<p>Akka can work as a compute grid by allowing you to send functions to the nodes
+in the cluster and collect the result back.</p>
+<p>The workhorse for this is the <tt class="docutils literal"><span class="pre">send</span></tt> method (in different variations). The
+<tt class="docutils literal"><span class="pre">send</span></tt> methods take the following parameters:</p>
+<blockquote>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">f</span></tt> &#8211; the function you want to be invoked on the remote nodes in the cluster</li>
+<li><tt class="docutils literal"><span class="pre">arg</span></tt> &#8211; the argument to the function (not all of them have this parameter)</li>
+<li><tt class="docutils literal"><span class="pre">replicationFactor</span></tt> &#8211; the replication factor defining the number of nodes you want the function to be sent and invoked on</li>
+</ul>
+</blockquote>
+<dl class="docutils">
+<dt>You can currently send these function types to the cluster:</dt>
+<dd><ul class="first last simple">
+<li><tt class="docutils literal"><span class="pre">Function0[Unit]</span></tt> &#8211; takes no arguments and returns nothing</li>
+<li><tt class="docutils literal"><span class="pre">Function0[Any]</span></tt> &#8211; takes no arguments and returns a value of type <tt class="docutils literal"><span class="pre">Any</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">Function1[Any,</span> <span class="pre">Unit]</span></tt> &#8211; takes an arguments of type <tt class="docutils literal"><span class="pre">Any</span></tt> and returns nothing</li>
+<li><tt class="docutils literal"><span class="pre">Function1[Any,</span> <span class="pre">Any]</span></tt> &#8211; takes an arguments of type <tt class="docutils literal"><span class="pre">Any</span></tt> and returns a value of type <tt class="docutils literal"><span class="pre">Any</span></tt></li>
+</ul>
+</dd>
+</dl>
+<p>All <tt class="docutils literal"><span class="pre">send</span></tt> methods returns immediately after the functions have been sent off
+asynchronously to the remote nodes. The <tt class="docutils literal"><span class="pre">send</span></tt> methods that takes a function
+that yields a return value all return a <tt class="docutils literal"><span class="pre">scala.List</span></tt> of <tt class="docutils literal"><span class="pre">akka.dispatch.Future[Any]</span></tt>.
+This gives you the option of handling these futures the way you wish. Some helper
+functions for working with <tt class="docutils literal"><span class="pre">Future</span></tt> are in the <tt class="docutils literal"><span class="pre">akka.dispatch.Futures</span></tt> object.</p>
+<p><img alt="More info" class="align-middle" src="../_images/more.png" /> Read more about futures in the <a class="reference external" href="http://doc.akka.io/actors-scala#Actors%20(Scala)-Send%20messages-Send-And-Receive-Future">Akka documentation on Futures</a>.</p>
+<p>Here are some examples showing how you can use the different <tt class="docutils literal"><span class="pre">send</span></tt> methods.</p>
+<p>Send a <tt class="docutils literal"><span class="pre">Function0[Unit]</span></tt>:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="k">val</span> <span class="n">node1</span> <span class="k">=</span> <span class="nc">Cluster</span> <span class="n">newNode</span> <span class="o">(</span><span class="nc">NodeAddress</span><span class="o">(</span><span class="s">&quot;test&quot;</span><span class="o">,</span> <span class="s">&quot;node1&quot;</span><span class="o">,</span> <span class="n">port</span> <span class="k">=</span> <span class="mi">9991</span><span class="o">))</span> <span class="n">start</span>
+<span class="k">val</span> <span class="n">node2</span> <span class="k">=</span> <span class="nc">Cluster</span> <span class="n">newNode</span> <span class="o">(</span><span class="nc">NodeAddress</span><span class="o">(</span><span class="s">&quot;test&quot;</span><span class="o">,</span> <span class="s">&quot;node2&quot;</span><span class="o">,</span> <span class="n">port</span> <span class="k">=</span> <span class="mi">9992</span><span class="o">))</span> <span class="n">start</span>
+
+<span class="k">val</span> <span class="n">fun</span> <span class="k">=</span> <span class="o">()</span> <span class="k">=&gt;</span> <span class="n">println</span><span class="o">(</span><span class="s">&quot;&gt;&gt;&gt; AKKA ROCKS &lt;&lt;&lt;&quot;</span><span class="o">)</span>
+
+<span class="c1">// send and invoke function on to two cluster nodes</span>
+<span class="n">node1</span> <span class="n">send</span> <span class="o">(</span><span class="n">fun</span><span class="o">,</span> <span class="mi">2</span><span class="o">)</span>
+</pre></div>
+</div>
+<p>Send a <tt class="docutils literal"><span class="pre">Function0[Any]</span></tt>:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="k">val</span> <span class="n">node1</span> <span class="k">=</span> <span class="nc">Cluster</span> <span class="n">newNode</span> <span class="o">(</span><span class="nc">NodeAddress</span><span class="o">(</span><span class="s">&quot;test&quot;</span><span class="o">,</span> <span class="s">&quot;node1&quot;</span><span class="o">,</span> <span class="n">port</span> <span class="k">=</span> <span class="mi">9991</span><span class="o">))</span> <span class="n">start</span>
+<span class="k">val</span> <span class="n">node2</span> <span class="k">=</span> <span class="nc">Cluster</span> <span class="n">newNode</span> <span class="o">(</span><span class="nc">NodeAddress</span><span class="o">(</span><span class="s">&quot;test&quot;</span><span class="o">,</span> <span class="s">&quot;node2&quot;</span><span class="o">,</span> <span class="n">port</span> <span class="k">=</span> <span class="mi">9992</span><span class="o">))</span> <span class="n">start</span>
+
+<span class="k">val</span> <span class="n">fun</span> <span class="k">=</span> <span class="o">()</span> <span class="k">=&gt;</span> <span class="s">&quot;AKKA ROCKS&quot;</span>
+
+<span class="c1">// send and invoke function on to two cluster nodes and get result</span>
+<span class="k">val</span> <span class="n">futures</span> <span class="k">=</span> <span class="n">node1</span> <span class="n">send</span> <span class="o">(</span><span class="n">fun</span><span class="o">,</span> <span class="mi">2</span><span class="o">)</span>
+
+<span class="nc">Futures</span> <span class="n">awaitAll</span> <span class="n">futures</span>
+<span class="n">println</span><span class="o">(</span><span class="s">&quot;Cluster says [&quot;</span> <span class="o">+</span> <span class="n">futures</span><span class="o">.</span><span class="n">map</span><span class="o">(</span><span class="n">_</span><span class="o">.</span><span class="n">result</span><span class="o">).</span><span class="n">mkString</span><span class="o">(</span><span class="s">&quot; - &quot;</span><span class="o">)</span> <span class="o">+</span> <span class="s">&quot;]&quot;</span><span class="o">)</span>
+</pre></div>
+</div>
+<p>Send a <tt class="docutils literal"><span class="pre">Function1[Any,</span> <span class="pre">Unit]</span></tt>:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="k">val</span> <span class="n">node1</span> <span class="k">=</span> <span class="nc">Cluster</span> <span class="n">newNode</span> <span class="o">(</span><span class="nc">NodeAddress</span><span class="o">(</span><span class="s">&quot;test&quot;</span><span class="o">,</span> <span class="s">&quot;node1&quot;</span><span class="o">,</span> <span class="n">port</span> <span class="k">=</span> <span class="mi">9991</span><span class="o">))</span> <span class="n">start</span>
+<span class="k">val</span> <span class="n">node2</span> <span class="k">=</span> <span class="nc">Cluster</span> <span class="n">newNode</span> <span class="o">(</span><span class="nc">NodeAddress</span><span class="o">(</span><span class="s">&quot;test&quot;</span><span class="o">,</span> <span class="s">&quot;node2&quot;</span><span class="o">,</span> <span class="n">port</span> <span class="k">=</span> <span class="mi">9992</span><span class="o">))</span> <span class="n">start</span>
+
+<span class="k">val</span> <span class="n">fun</span> <span class="k">=</span> <span class="o">((</span><span class="n">s</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="n">println</span><span class="o">(</span><span class="s">&quot;&gt;&gt;&gt; &quot;</span> <span class="o">+</span> <span class="n">s</span> <span class="o">+</span> <span class="s">&quot; &lt;&lt;&lt;&quot;</span><span class="o">)).</span><span class="n">asInstanceOf</span><span class="o">[</span><span class="kt">Function1</span><span class="o">[</span><span class="kt">Any</span>, <span class="kt">Unit</span><span class="o">]]</span>
+
+<span class="c1">// send and invoke function on to two cluster nodes</span>
+<span class="n">node1</span> <span class="n">send</span> <span class="o">(</span><span class="n">fun</span><span class="o">,</span> <span class="s">&quot;AKKA ROCKS&quot;</span><span class="o">,</span> <span class="mi">2</span><span class="o">)</span>
+</pre></div>
+</div>
+<p>Send a <tt class="docutils literal"><span class="pre">Function1[Any,</span> <span class="pre">Any]</span></tt>:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="k">val</span> <span class="n">node1</span> <span class="k">=</span> <span class="nc">Cluster</span> <span class="n">newNode</span> <span class="o">(</span><span class="nc">NodeAddress</span><span class="o">(</span><span class="s">&quot;test&quot;</span><span class="o">,</span> <span class="s">&quot;node1&quot;</span><span class="o">,</span> <span class="n">port</span> <span class="k">=</span> <span class="mi">9991</span><span class="o">))</span> <span class="n">start</span>
+<span class="k">val</span> <span class="n">node2</span> <span class="k">=</span> <span class="nc">Cluster</span> <span class="n">newNode</span> <span class="o">(</span><span class="nc">NodeAddress</span><span class="o">(</span><span class="s">&quot;test&quot;</span><span class="o">,</span> <span class="s">&quot;node2&quot;</span><span class="o">,</span> <span class="n">port</span> <span class="k">=</span> <span class="mi">9992</span><span class="o">))</span> <span class="n">start</span>
+
+<span class="k">val</span> <span class="n">fun</span> <span class="k">=</span> <span class="o">((</span><span class="n">i</span><span class="k">:</span> <span class="kt">Int</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="n">i</span> <span class="o">*</span> <span class="n">i</span><span class="o">).</span><span class="n">asInstanceOf</span><span class="o">[</span><span class="kt">Function1</span><span class="o">[</span><span class="kt">Any</span>, <span class="kt">Any</span><span class="o">]]</span>
+
+<span class="c1">// send and invoke function on one cluster node and get result</span>
+<span class="k">val</span> <span class="n">future1</span> <span class="k">=</span> <span class="n">node1</span> <span class="n">send</span> <span class="o">(</span><span class="n">fun</span><span class="o">,</span> <span class="mi">2</span><span class="o">,</span> <span class="mi">1</span><span class="o">)</span> <span class="n">head</span>
+<span class="k">val</span> <span class="n">future2</span> <span class="k">=</span> <span class="n">node1</span> <span class="n">send</span> <span class="o">(</span><span class="n">fun</span><span class="o">,</span> <span class="mi">2</span><span class="o">,</span> <span class="mi">1</span><span class="o">)</span> <span class="n">head</span>
+
+<span class="c1">// grab the result from the first one that returns</span>
+<span class="k">val</span> <span class="n">result</span> <span class="k">=</span> <span class="nc">Futures</span> <span class="n">awaitEither</span> <span class="o">(</span><span class="n">future1</span><span class="o">,</span> <span class="n">future2</span><span class="o">)</span>
+<span class="n">println</span><span class="o">(</span><span class="s">&quot;Cluster says [&quot;</span> <span class="o">+</span> <span class="n">result</span><span class="o">.</span><span class="n">get</span> <span class="o">+</span> <span class="s">&quot;]&quot;</span><span class="o">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="querying-the-clustered-actor-registry">
+<h2>Querying the Clustered Actor Registry<a class="headerlink" href="#querying-the-clustered-actor-registry" title="Permalink to this headline">¶</a></h2>
+<p>Here we have some other methods for querying the Clustered Actor Registry in different ways.</p>
+<dl class="docutils">
+<dt>Check if an actor is clustered (stored and/or used in the cluster):</dt>
+<dd><ul class="first last simple">
+<li><tt class="docutils literal"><span class="pre">def</span> <span class="pre">isClustered(actorUuid:</span> <span class="pre">UUID,</span> <span class="pre">actorId:</span> <span class="pre">String,</span> <span class="pre">actorClassName:</span> <span class="pre">String):</span> <span class="pre">Boolean</span></tt></li>
+<li>When using this method you should only specify one of the parameters using &#8220;named parameters&#8221; as in the examples above.</li>
+</ul>
+</dd>
+<dt>Check if an actor is used by a specific node (e.g. checked out locally using <tt class="docutils literal"><span class="pre">use</span></tt>):</dt>
+<dd><ul class="first last simple">
+<li><tt class="docutils literal"><span class="pre">def</span> <span class="pre">isInUseOnNode(actorUuid:</span> <span class="pre">UUID,</span> <span class="pre">actorId:</span> <span class="pre">String,</span> <span class="pre">actorClassName:</span> <span class="pre">String,</span> <span class="pre">node:</span> <span class="pre">NodeAddress):</span> <span class="pre">Boolean</span></tt></li>
+<li>When using this method you should only specify one of the parameters using &#8220;named parameters&#8221; as in the examples above. Default argument for <tt class="docutils literal"><span class="pre">node</span></tt> is &#8220;this&#8221; node.</li>
+</ul>
+</dd>
+<dt>Lookup the remote addresses for a specific actor (can reside on more than one node):</dt>
+<dd><ul class="first last simple">
+<li><tt class="docutils literal"><span class="pre">def</span> <span class="pre">addressesForActor(actorUuid:</span> <span class="pre">UUID,</span> <span class="pre">actorId:</span> <span class="pre">String,</span>
+<span class="pre">actorClassName:</span> <span class="pre">String):</span> <span class="pre">Array[Tuple2[UUID,</span> <span class="pre">InetSocketAddress]]</span></tt></li>
+<li>When using this method you should only specify one of the parameters using &#8220;named parameters&#8221; as in the examples above.</li>
+</ul>
+</dd>
+<dt>Lookup all actors that are in use (e.g. &#8220;checked out&#8221;) on this node:</dt>
+<dd><ul class="first last simple">
+<li><tt class="docutils literal"><span class="pre">def</span> <span class="pre">uuidsForActorsInUse:</span> <span class="pre">Array[UUID]</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">def</span> <span class="pre">idsForActorsInUse:</span> <span class="pre">Array[String]</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">def</span> <span class="pre">classNamesForActorsInUse:</span> <span class="pre">Array[String]</span></tt></li>
+</ul>
+</dd>
+<dt>Lookup all actors are available (e.g. &#8220;stored&#8221;) in the Clustered Actor Registry:</dt>
+<dd><ul class="first last simple">
+<li><tt class="docutils literal"><span class="pre">def</span> <span class="pre">uuidsForClusteredActors:</span> <span class="pre">Array[UUID]</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">def</span> <span class="pre">idsForClusteredActors:</span> <span class="pre">Array[String]</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">def</span> <span class="pre">classNamesForClusteredActors:</span> <span class="pre">Array[String]</span></tt></li>
+</ul>
+</dd>
+<dt>Lookup the <tt class="docutils literal"><span class="pre">Actor.id</span></tt> by <tt class="docutils literal"><span class="pre">Actor.uuid</span></tt>:</dt>
+<dd><ul class="first last simple">
+<li><tt class="docutils literal"><span class="pre">def</span> <span class="pre">actorIdForUuid(uuid:</span> <span class="pre">UUID):</span> <span class="pre">String</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">def</span> <span class="pre">actorIdsForUuids(uuids:</span> <span class="pre">Array[UUID]):</span> <span class="pre">Array[String]</span></tt></li>
+</ul>
+</dd>
+<dt>Lookup the <tt class="docutils literal"><span class="pre">Actor.actorClassName</span></tt> by <tt class="docutils literal"><span class="pre">Actor.uuid</span></tt>:</dt>
+<dd><ul class="first last simple">
+<li><tt class="docutils literal"><span class="pre">def</span> <span class="pre">actorClassNameForUuid(uuid:</span> <span class="pre">UUID):</span> <span class="pre">String</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">def</span> <span class="pre">actorClassNamesForUuids(uuids:</span> <span class="pre">Array[UUID]):</span> <span class="pre">Array[String]</span></tt></li>
+</ul>
+</dd>
+<dt>Lookup the <tt class="docutils literal"><span class="pre">Actor.uuid</span></tt>&#8216;s by <tt class="docutils literal"><span class="pre">Actor.id</span></tt>:</dt>
+<dd><ul class="first last simple">
+<li><tt class="docutils literal"><span class="pre">def</span> <span class="pre">uuidsForActorId(actorId:</span> <span class="pre">String):</span> <span class="pre">Array[UUID]</span></tt></li>
+</ul>
+</dd>
+<dt>Lookup the <tt class="docutils literal"><span class="pre">Actor.uuid</span></tt>&#8216;s by <tt class="docutils literal"><span class="pre">Actor.actorClassName</span></tt>:</dt>
+<dd><ul class="first last simple">
+<li><tt class="docutils literal"><span class="pre">def</span> <span class="pre">uuidsForActorClassName(actorClassName:</span> <span class="pre">String):</span> <span class="pre">Array[UUID]</span></tt></li>
+</ul>
+</dd>
+<dt>Lookup which nodes that have checked out a specific actor:</dt>
+<dd><ul class="first last simple">
+<li><tt class="docutils literal"><span class="pre">def</span> <span class="pre">nodesForActorsInUseWithUuid(uuid:</span> <span class="pre">UUID):</span> <span class="pre">Array[String]</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">def</span> <span class="pre">nodesForActorsInUseWithId(id:</span> <span class="pre">String):</span> <span class="pre">Array[String]</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">def</span> <span class="pre">nodesForActorsInUseWithClassName(className:</span> <span class="pre">String):</span> <span class="pre">Array[String]</span></tt></li>
+</ul>
+</dd>
+<dt>Lookup the <tt class="docutils literal"><span class="pre">Actor.uuid</span></tt> for the actors that have been checked out a specific node:</dt>
+<dd><ul class="first last simple">
+<li><tt class="docutils literal"><span class="pre">def</span> <span class="pre">uuidsForActorsInUseOnNode(nodeName:</span> <span class="pre">String):</span> <span class="pre">Array[UUID]</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">def</span> <span class="pre">idsForActorsInUseOnNode(nodeName:</span> <span class="pre">String):</span> <span class="pre">Array[String]</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">def</span> <span class="pre">classNamesForActorsInUseOnNode(nodeName:</span> <span class="pre">String):</span> <span class="pre">Array[String]</span></tt></li>
+</ul>
+</dd>
+<dt>Lookup the serialization <tt class="docutils literal"><span class="pre">Format</span></tt> instance for a specific actor:</dt>
+<dd><ul class="first last simple">
+<li><tt class="docutils literal"><span class="pre">def</span> <span class="pre">formatForActor(actorUuid:</span> <span class="pre">UUID,</span> <span class="pre">actorId:</span> <span class="pre">String,</span> <span class="pre">actorClassName:</span> <span class="pre">String):</span> <span class="pre">Format[T]</span></tt></li>
+<li>When using this method you should only specify one of the parameters using &#8220;named parameters&#8221; as in the examples above.</li>
+</ul>
+</dd>
+</dl>
+</div>
+<div class="section" id="clustered-configuration-manager">
+<h2>Clustered configuration manager<a class="headerlink" href="#clustered-configuration-manager" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="custom-configuration-data">
+<h3>Custom configuration data<a class="headerlink" href="#custom-configuration-data" title="Permalink to this headline">¶</a></h3>
+<p>You can also store configuration data into the cluster.  This is done using the
+<tt class="docutils literal"><span class="pre">setConfigElement</span></tt> and <tt class="docutils literal"><span class="pre">getConfigElement</span></tt> methods. The key is a <tt class="docutils literal"><span class="pre">String</span></tt> and the data a <tt class="docutils literal"><span class="pre">Array[Byte]</span></tt>:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="n">clusterNode</span> <span class="n">setConfigElement</span> <span class="o">(</span><span class="s">&quot;hello&quot;</span><span class="o">,</span> <span class="s">&quot;world&quot;</span><span class="o">.</span><span class="n">getBytes</span><span class="o">(</span><span class="s">&quot;UTF-8&quot;</span><span class="o">))</span>
+
+<span class="k">val</span> <span class="n">valueAsBytes</span>  <span class="k">=</span> <span class="n">clusterNode</span> <span class="n">getConfigElement</span> <span class="o">(</span><span class="s">&quot;hello&quot;</span><span class="o">)</span> <span class="c1">// returns Array[Byte]</span>
+<span class="k">val</span> <span class="n">valueAsString</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">String</span><span class="o">(</span><span class="n">valueAsBytes</span><span class="o">,</span> <span class="s">&quot;UTF-8&quot;</span><span class="o">)</span>
+</pre></div>
+</div>
+<p>You can also remove an entry using the <tt class="docutils literal"><span class="pre">removeConfigElement</span></tt> method and get an
+<tt class="docutils literal"><span class="pre">Array[String]</span></tt> with all the keys:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="n">clusterNode</span> <span class="n">removeConfigElement</span> <span class="o">(</span><span class="s">&quot;hello&quot;</span><span class="o">)</span>
+
+<span class="k">val</span> <span class="n">allConfigElementKeys</span> <span class="k">=</span> <span class="n">clusterNode</span><span class="o">.</span><span class="n">getConfigElementKeys</span> <span class="c1">// returns Array[String]</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="consolidation-and-management-of-the-akka-configuration-file">
+<h3>Consolidation and management of the Akka configuration file<a class="headerlink" href="#consolidation-and-management-of-the-akka-configuration-file" title="Permalink to this headline">¶</a></h3>
+<p>Not implemented yet.</p>
+<p>The actor configuration file <tt class="docutils literal"><span class="pre">akka.conf</span></tt> will also be stored into the cluster
+and it will be possible to have one single configuration file, stored on the server, and pushed out to all
+the nodes that joins the cluster. Each node only needs to be configured with the ZooKeeper
+server address and the master configuration will only reside in one single place
+simplifying administration of the cluster and alleviates the risk of having
+different configuration files lying around in the cluster.</p>
+</div>
+</div>
+<div class="section" id="leader-election">
+<h2>Leader election<a class="headerlink" href="#leader-election" title="Permalink to this headline">¶</a></h2>
+<p>The cluster supports leader election. There will always only be one single
+leader in the cluster. The first thing that happens when the cluster startup is
+a leader election. The leader that gets elected will stay the leader until it
+crashes or is shut down, then an automatic reelection process will take place
+and a new leader is elected.  Only having one leader in a cluster can be very
+useful to solve the wide range of problems. You can find out which node is the
+leader by invoking the <tt class="docutils literal"><span class="pre">leader</span></tt> method. A node can also check if it is the
+leader by invoking the <tt class="docutils literal"><span class="pre">isLeader</span></tt> method. A leader node can also explicitly
+resign and issue a new leader election by invoking the <tt class="docutils literal"><span class="pre">resign</span></tt> method. Each node has an election number stating its ranking in the last election. You can query a node for its election number through the <tt class="docutils literal"><span class="pre">electionNumber</span></tt> method.</p>
+</div>
+<div class="section" id="jmx-monitoring-and-management">
+<h2>JMX monitoring and management<a class="headerlink" href="#jmx-monitoring-and-management" title="Permalink to this headline">¶</a></h2>
+<p>The clustering module has an JMX MBean that you can use. Here is the interface
+with all available operations:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="k">trait</span> <span class="nc">ClusterNodeMBean</span> <span class="o">{</span>
+  <span class="k">def</span> <span class="n">start</span><span class="k">:</span> <span class="kt">Unit</span>
+  <span class="k">def</span> <span class="n">stop</span><span class="k">:</span> <span class="kt">Unit</span>
+
+  <span class="k">def</span> <span class="n">disconnect</span><span class="k">:</span> <span class="kt">Unit</span>
+  <span class="k">def</span> <span class="n">reconnect</span><span class="k">:</span> <span class="kt">Unit</span>
+  <span class="k">def</span> <span class="n">resign</span><span class="k">:</span> <span class="kt">Unit</span>
+
+  <span class="k">def</span> <span class="n">isConnected</span><span class="k">:</span> <span class="kt">Boolean</span>
+
+  <span class="k">def</span> <span class="n">getRemoteServerHostname</span><span class="k">:</span> <span class="kt">String</span>
+  <span class="k">def</span> <span class="n">getRemoteServerPort</span><span class="k">:</span> <span class="kt">Int</span>
+
+  <span class="k">def</span> <span class="n">getNodeName</span><span class="k">:</span> <span class="kt">String</span>
+  <span class="k">def</span> <span class="n">getClusterName</span><span class="k">:</span> <span class="kt">String</span>
+  <span class="k">def</span> <span class="n">getZooKeeperServerAddresses</span><span class="k">:</span> <span class="kt">String</span>
+
+  <span class="k">def</span> <span class="n">getMemberNodes</span><span class="k">:</span> <span class="kt">Array</span><span class="o">[</span><span class="kt">String</span><span class="o">]</span>
+  <span class="k">def</span> <span class="n">getLeader</span><span class="k">:</span> <span class="kt">String</span>
+
+  <span class="k">def</span> <span class="n">getUuidsForClusteredActors</span><span class="k">:</span> <span class="kt">Array</span><span class="o">[</span><span class="kt">String</span><span class="o">]</span>
+  <span class="k">def</span> <span class="n">getIdsForClusteredActors</span><span class="k">:</span> <span class="kt">Array</span><span class="o">[</span><span class="kt">String</span><span class="o">]</span>
+  <span class="k">def</span> <span class="n">getClassNamesForClusteredActors</span><span class="k">:</span> <span class="kt">Array</span><span class="o">[</span><span class="kt">String</span><span class="o">]</span>
+
+  <span class="k">def</span> <span class="n">getUuidsForActorsInUse</span><span class="k">:</span> <span class="kt">Array</span><span class="o">[</span><span class="kt">String</span><span class="o">]</span>
+  <span class="k">def</span> <span class="n">getIdsForActorsInUse</span><span class="k">:</span> <span class="kt">Array</span><span class="o">[</span><span class="kt">String</span><span class="o">]</span>
+  <span class="k">def</span> <span class="n">getClassNamesForActorsInUse</span><span class="k">:</span> <span class="kt">Array</span><span class="o">[</span><span class="kt">String</span><span class="o">]</span>
+
+  <span class="k">def</span> <span class="n">getNodesForActorInUseWithUuid</span><span class="o">(</span><span class="n">uuid</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span><span class="k">:</span> <span class="kt">Array</span><span class="o">[</span><span class="kt">String</span><span class="o">]</span>
+  <span class="k">def</span> <span class="n">getNodesForActorInUseWithId</span><span class="o">(</span><span class="n">id</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span><span class="k">:</span> <span class="kt">Array</span><span class="o">[</span><span class="kt">String</span><span class="o">]</span>
+  <span class="k">def</span> <span class="n">getNodesForActorInUseWithClassName</span><span class="o">(</span><span class="n">className</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span><span class="k">:</span> <span class="kt">Array</span><span class="o">[</span><span class="kt">String</span><span class="o">]</span>
+
+  <span class="k">def</span> <span class="n">getUuidsForActorsInUseOnNode</span><span class="o">(</span><span class="n">nodeName</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span><span class="k">:</span> <span class="kt">Array</span><span class="o">[</span><span class="kt">String</span><span class="o">]</span>
+  <span class="k">def</span> <span class="n">getIdsForActorsInUseOnNode</span><span class="o">(</span><span class="n">nodeName</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span><span class="k">:</span> <span class="kt">Array</span><span class="o">[</span><span class="kt">String</span><span class="o">]</span>
+  <span class="k">def</span> <span class="n">getClassNamesForActorsInUseOnNode</span><span class="o">(</span><span class="n">nodeName</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span><span class="k">:</span> <span class="kt">Array</span><span class="o">[</span><span class="kt">String</span><span class="o">]</span>
+
+  <span class="k">def</span> <span class="n">setConfigElement</span><span class="o">(</span><span class="n">key</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span> <span class="n">value</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span><span class="k">:</span> <span class="kt">Unit</span>
+  <span class="k">def</span> <span class="n">getConfigElement</span><span class="o">(</span><span class="n">key</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span><span class="k">:</span> <span class="kt">AnyRef</span>
+  <span class="k">def</span> <span class="n">removeConfigElement</span><span class="o">(</span><span class="n">key</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span><span class="k">:</span> <span class="kt">Unit</span>
+  <span class="k">def</span> <span class="n">getConfigElementKeys</span><span class="k">:</span> <span class="kt">Array</span><span class="o">[</span><span class="kt">String</span><span class="o">]</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+<p>JMX support is turned on and off using the default <tt class="docutils literal"><span class="pre">akka.enable-jmx</span></tt>
+configuration option.</p>
+<div class="highlight-conf"><pre>akka {
+  enable-jmx = on
+}</pre>
+</div>
+</div>
+</div>
+
+
+      </div>
+      <div class="bottomnav">
+      
+        <p>
+        «&#160;&#160;<a href="../index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="../index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="durable-mailbox.html">Durable Mailboxes</a>&#160;&#160;»
+        </p>
+
+      </div>
+
+    <div class="footer">
+        &copy; Copyright 2009-2011, Scalable Solutions AB.
+      Last updated on Apr 04, 2011.
+    </div>
+  </body>
+</html>

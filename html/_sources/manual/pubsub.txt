@@ -1,0 +1,14 @@
+Publish/Subscribe
+=================
+
+Not implemented yet.
+
+Will be based upon:
+
+* ZeroMQ - brokerless (http://www.zeromq.org)
+
+Later we might support:
+
+* AMQP - broker
+* JMS - broker
+* Hedwig from ZooKeeper project (broker)

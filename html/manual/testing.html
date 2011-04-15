@@ -1,0 +1,271 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Testing &mdash; Cloudy Akka</title>
+    <link rel="stylesheet" href="../_static/akka.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/print.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/theme_extras.js"></script>
+    <link rel="top" title="Cloudy Akka" href="../index.html" />
+    <link rel="prev" title="Configuration" href="configuration.html" /> 
+  </head>
+  <body>
+      <div class="header">
+        <a href="../index.html">
+          <img class="logo" src="../_static/logo.png" alt="Logo"/>
+        </a>
+      </div>
+      <div class="topnav">
+      
+        <p>
+        «&#160;&#160;<a href="configuration.html">Configuration</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="../index.html">Contents</a>
+        </p>
+
+      </div>
+      <div class="content">
+        
+        
+  <div class="section" id="testing">
+<h1>Testing<a class="headerlink" href="#testing" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="multi-jvm-testing">
+<h2>Multi-JVM Testing<a class="headerlink" href="#multi-jvm-testing" title="Permalink to this headline">¶</a></h2>
+<p>Included in the example is an sbt trait for multi-JVM testing which will fork
+JVMs for multi-node testing. There is support for running applications (objects
+with main methods) and running ScalaTest tests.</p>
+<p>Using the multi-JVM testing is straight-forward. First, mix the MultiJvmTests
+trait into your sbt project:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="k">class</span> <span class="nc">SomeProject</span><span class="o">(</span><span class="n">info</span><span class="k">:</span> <span class="kt">ProjectInfo</span><span class="o">)</span> <span class="k">extends</span> <span class="nc">DefaultProject</span><span class="o">(</span><span class="n">info</span><span class="o">)</span> <span class="k">with</span> <span class="nc">MultiJvmTests</span>
+</pre></div>
+</div>
+<p>You can specify JVM options for the forked JVMs:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="k">class</span> <span class="nc">SomeProject</span><span class="o">(</span><span class="n">info</span><span class="k">:</span> <span class="kt">ProjectInfo</span><span class="o">)</span> <span class="k">extends</span> <span class="nc">DefaultProject</span><span class="o">(</span><span class="n">info</span><span class="o">)</span> <span class="k">with</span> <span class="nc">MultiJvmTests</span> <span class="o">{</span>
+  <span class="k">override</span> <span class="k">def</span> <span class="n">multiJvmOptions</span> <span class="k">=</span> <span class="nc">Seq</span><span class="o">(</span><span class="s">&quot;-Xmx256M&quot;</span><span class="o">)</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+<p>There are two sbt commands: <tt class="docutils literal"><span class="pre">multi-jvm-run</span></tt> for running applications and
+<tt class="docutils literal"><span class="pre">multi-jvm-test</span></tt> for running ScalaTest tests.</p>
+<div class="section" id="creating-application-tests">
+<h3>Creating application tests<a class="headerlink" href="#creating-application-tests" title="Permalink to this headline">¶</a></h3>
+<p>The tests are discovered through a naming convention. A test is named with the
+following pattern:</p>
+<div class="highlight-none"><div class="highlight"><pre>{TestName}MultiJvm{NodeName}
+</pre></div>
+</div>
+<p>That is, each test has <tt class="docutils literal"><span class="pre">MultiJvm</span></tt> in the middle of its name. The part before
+it groups together tests/applications under a single <tt class="docutils literal"><span class="pre">TestName</span></tt> that will run
+together. The part after, the <tt class="docutils literal"><span class="pre">NodeName</span></tt>, is a distinguishing name for each
+forked JVM.</p>
+<p>So to create a 3-node test called <tt class="docutils literal"><span class="pre">Test</span></tt>, you can create three applications
+like the following:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="k">package</span> <span class="nn">example</span>
+
+<span class="k">object</span> <span class="nc">TestMultiJvmNode1</span> <span class="o">{</span>
+  <span class="k">def</span> <span class="n">main</span><span class="o">(</span><span class="n">args</span><span class="k">:</span> <span class="kt">Array</span><span class="o">[</span><span class="kt">String</span><span class="o">])</span> <span class="o">{</span>
+    <span class="n">println</span><span class="o">(</span><span class="s">&quot;Hello from node 1&quot;</span><span class="o">)</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="k">object</span> <span class="nc">TestMultiJvmNode2</span> <span class="o">{</span>
+  <span class="k">def</span> <span class="n">main</span><span class="o">(</span><span class="n">args</span><span class="k">:</span> <span class="kt">Array</span><span class="o">[</span><span class="kt">String</span><span class="o">])</span> <span class="o">{</span>
+    <span class="n">println</span><span class="o">(</span><span class="s">&quot;Hello from node 2&quot;</span><span class="o">)</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="k">object</span> <span class="nc">TestMultiJvmNode3</span> <span class="o">{</span>
+  <span class="k">def</span> <span class="n">main</span><span class="o">(</span><span class="n">args</span><span class="k">:</span> <span class="kt">Array</span><span class="o">[</span><span class="kt">String</span><span class="o">])</span> <span class="o">{</span>
+    <span class="n">println</span><span class="o">(</span><span class="s">&quot;Hello from node 3&quot;</span><span class="o">)</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+<p>When you call <tt class="docutils literal"><span class="pre">multi-jvm-run</span> <span class="pre">Test</span></tt> at the sbt prompt, three JVMs will be
+spawned, one for each node. It will look like this:</p>
+<div class="highlight-shell"><pre>&gt; multi-jvm-run Test
+...
+[info] == multi-jvm-run ==
+[info] == multi-jvm / Test ==
+[info] Starting JVM-Node1 for example.TestMultiJvmNode1
+[info] Starting JVM-Node2 for example.TestMultiJvmNode2
+[info] Starting JVM-Node3 for example.TestMultiJvmNode3
+[JVM-Node1] Hello from node 1
+[JVM-Node2] Hello from node 2
+[JVM-Node3] Hello from node 3
+[info] == multi-jvm / Test ==
+[info] == multi-jvm-run ==
+[success] Successful.</pre>
+</div>
+</div>
+<div class="section" id="naming">
+<h3>Naming<a class="headerlink" href="#naming" title="Permalink to this headline">¶</a></h3>
+<p>You can change what the <tt class="docutils literal"><span class="pre">MultiJvm</span></tt> identifier is. For example, to change it to
+<tt class="docutils literal"><span class="pre">ClusterTest</span></tt> override the <tt class="docutils literal"><span class="pre">multiJvmTestName</span></tt> method:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="k">class</span> <span class="nc">SomeProject</span><span class="o">(</span><span class="n">info</span><span class="k">:</span> <span class="kt">ProjectInfo</span><span class="o">)</span> <span class="k">extends</span> <span class="nc">DefaultProject</span><span class="o">(</span><span class="n">info</span><span class="o">)</span> <span class="k">with</span> <span class="nc">MultiJvmTests</span> <span class="o">{</span>
+  <span class="k">override</span> <span class="k">def</span> <span class="n">multiJvmTestName</span> <span class="k">=</span> <span class="s">&quot;ClusterSpec&quot;</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+<p>Your tests should now be named <tt class="docutils literal"><span class="pre">{TestName}ClusterTest{NodeName}</span></tt>.</p>
+</div>
+<div class="section" id="scalatest">
+<h3>ScalaTest<a class="headerlink" href="#scalatest" title="Permalink to this headline">¶</a></h3>
+<p>There is also support for creating ScalaTest tests rather than applications. To
+do this use the same naming convention as above, but create ScalaTest suites
+rather than objects with main methods. You need to have ScalaTest on the
+classpath. Here is a similar example to the one above but using ScalaTest:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="k">package</span> <span class="nn">example</span>
+
+<span class="k">import</span> <span class="nn">org.scalatest.WordSpec</span>
+<span class="k">import</span> <span class="nn">org.scalatest.matchers.MustMatchers</span>
+
+<span class="k">class</span> <span class="nc">SpecMultiJvmNode1</span> <span class="k">extends</span> <span class="nc">WordSpec</span> <span class="k">with</span> <span class="nc">MustMatchers</span> <span class="o">{</span>
+  <span class="s">&quot;A node&quot;</span> <span class="n">should</span> <span class="o">{</span>
+    <span class="s">&quot;be able to say hello&quot;</span> <span class="n">in</span> <span class="o">{</span>
+      <span class="k">val</span> <span class="n">message</span> <span class="k">=</span> <span class="s">&quot;Hello from node 1&quot;</span>
+      <span class="n">message</span> <span class="n">must</span> <span class="n">be</span><span class="o">(</span><span class="s">&quot;Hello from node 1&quot;</span><span class="o">)</span>
+    <span class="o">}</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="k">class</span> <span class="nc">SpecMultiJvmNode2</span> <span class="k">extends</span> <span class="nc">WordSpec</span> <span class="k">with</span> <span class="nc">MustMatchers</span> <span class="o">{</span>
+  <span class="s">&quot;A node&quot;</span> <span class="n">should</span> <span class="o">{</span>
+    <span class="s">&quot;be able to say hello&quot;</span> <span class="n">in</span> <span class="o">{</span>
+      <span class="k">val</span> <span class="n">message</span> <span class="k">=</span> <span class="s">&quot;Hello from node 2&quot;</span>
+      <span class="n">message</span> <span class="n">must</span> <span class="n">be</span><span class="o">(</span><span class="s">&quot;Hello from node 2&quot;</span><span class="o">)</span>
+    <span class="o">}</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+<p>To run these tests you would call <tt class="docutils literal"><span class="pre">multi-jvm-test</span> <span class="pre">Spec</span></tt> at the sbt prompt.</p>
+</div>
+<div class="section" id="zookeeper-barrier">
+<h3>Zookeeper Barrier<a class="headerlink" href="#zookeeper-barrier" title="Permalink to this headline">¶</a></h3>
+<p>When running multi-JVM tests it&#8217;s common to need to coordinate timing across
+nodes. To do this there is a Zookeeper-based double-barrier (there is both an
+entry barrier and an exit barrier). ClusterNodes also have support for creating
+barriers easily. To wait at the entry use the <tt class="docutils literal"><span class="pre">enter</span></tt> method. To wait at the
+exit use the <tt class="docutils literal"><span class="pre">leave</span></tt> method. It&#8217;s also possible to pass a block of code which
+will be run between the barriers.</p>
+<p>When creating a barrier you pass it a name and the number of nodes that are
+expected to arrive at the barrier. You can also pass a timeout. The default
+timeout is 60 seconds.</p>
+<p>Here is an example of coordinating the starting of two nodes and then running
+something in coordination:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="k">package</span> <span class="nn">example</span>
+
+<span class="k">import</span> <span class="nn">akka.cloud.cluster._</span>
+<span class="k">import</span> <span class="nn">akka.actor._</span>
+
+<span class="k">object</span> <span class="nc">TestMultiJvmNode1</span> <span class="o">{</span>
+  <span class="k">val</span> <span class="nc">NrOfNodes</span> <span class="k">=</span> <span class="mi">2</span>
+
+  <span class="k">def</span> <span class="n">main</span><span class="o">(</span><span class="n">args</span><span class="k">:</span> <span class="kt">Array</span><span class="o">[</span><span class="kt">String</span><span class="o">])</span> <span class="o">{</span>
+    <span class="nc">Cluster</span><span class="o">.</span><span class="n">startLocalCluster</span><span class="o">()</span>
+
+    <span class="k">val</span> <span class="n">node</span> <span class="k">=</span> <span class="nc">Cluster</span><span class="o">.</span><span class="n">newNode</span><span class="o">(</span><span class="nc">NodeAddress</span><span class="o">(</span><span class="s">&quot;example&quot;</span><span class="o">,</span> <span class="s">&quot;node1&quot;</span><span class="o">,</span> <span class="n">port</span> <span class="k">=</span> <span class="mi">9991</span><span class="o">))</span>
+
+    <span class="n">node</span><span class="o">.</span><span class="n">barrier</span><span class="o">(</span><span class="s">&quot;start-node1&quot;</span><span class="o">,</span> <span class="nc">NrOfNodes</span><span class="o">)</span> <span class="o">{</span>
+      <span class="n">node</span><span class="o">.</span><span class="n">start</span>
+    <span class="o">}</span>
+
+    <span class="n">node</span><span class="o">.</span><span class="n">barrier</span><span class="o">(</span><span class="s">&quot;start-node2&quot;</span><span class="o">,</span> <span class="nc">NrOfNodes</span><span class="o">)</span> <span class="o">{</span>
+      <span class="c1">// wait for node 2 to start</span>
+    <span class="o">}</span>
+
+    <span class="n">node</span><span class="o">.</span><span class="n">barrier</span><span class="o">(</span><span class="s">&quot;hello&quot;</span><span class="o">,</span> <span class="nc">NrOfNodes</span><span class="o">)</span> <span class="o">{</span>
+      <span class="n">println</span><span class="o">(</span><span class="s">&quot;Hello from node 1&quot;</span><span class="o">)</span>
+    <span class="o">}</span>
+
+    <span class="nc">Actor</span><span class="o">.</span><span class="n">registry</span><span class="o">.</span><span class="n">shutdownAll</span>
+
+    <span class="n">node</span><span class="o">.</span><span class="n">stop</span>
+
+    <span class="nc">Cluster</span><span class="o">.</span><span class="n">shutdownLocalCluster</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="k">object</span> <span class="nc">TestMultiJvmNode2</span> <span class="o">{</span>
+  <span class="k">val</span> <span class="nc">NrOfNodes</span> <span class="k">=</span> <span class="mi">2</span>
+
+  <span class="k">def</span> <span class="n">main</span><span class="o">(</span><span class="n">args</span><span class="k">:</span> <span class="kt">Array</span><span class="o">[</span><span class="kt">String</span><span class="o">])</span> <span class="o">{</span>
+    <span class="k">val</span> <span class="n">node</span> <span class="k">=</span> <span class="nc">Cluster</span><span class="o">.</span><span class="n">newNode</span><span class="o">(</span><span class="nc">NodeAddress</span><span class="o">(</span><span class="s">&quot;example&quot;</span><span class="o">,</span> <span class="s">&quot;node2&quot;</span><span class="o">,</span> <span class="n">port</span> <span class="k">=</span> <span class="mi">9992</span><span class="o">))</span>
+
+    <span class="n">node</span><span class="o">.</span><span class="n">barrier</span><span class="o">(</span><span class="s">&quot;start-node1&quot;</span><span class="o">,</span> <span class="nc">NrOfNodes</span><span class="o">)</span> <span class="o">{</span>
+      <span class="c1">// wait for node 1 to start</span>
+    <span class="o">}</span>
+
+    <span class="n">node</span><span class="o">.</span><span class="n">barrier</span><span class="o">(</span><span class="s">&quot;start-node2&quot;</span><span class="o">,</span> <span class="nc">NrOfNodes</span><span class="o">)</span> <span class="o">{</span>
+      <span class="n">node</span><span class="o">.</span><span class="n">start</span>
+    <span class="o">}</span>
+
+    <span class="n">node</span><span class="o">.</span><span class="n">barrier</span><span class="o">(</span><span class="s">&quot;hello&quot;</span><span class="o">,</span> <span class="nc">NrOfNodes</span><span class="o">)</span> <span class="o">{</span>
+      <span class="n">println</span><span class="o">(</span><span class="s">&quot;Hello from node 2&quot;</span><span class="o">)</span>
+    <span class="o">}</span>
+
+    <span class="nc">Actor</span><span class="o">.</span><span class="n">registry</span><span class="o">.</span><span class="n">shutdownAll</span>
+
+    <span class="n">node</span><span class="o">.</span><span class="n">stop</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+<p>An example output from this would be:</p>
+<div class="highlight-shell"><pre>&gt; multi-jvm-run Test
+...
+[info] == multi-jvm-run ==
+[info] == multi-jvm / Test ==
+[info] Starting JVM-Node1 for example.TestMultiJvmNode1
+[info] Starting JVM-Node2 for example.TestMultiJvmNode2
+[JVM-Node1] Loading config [akka.conf] from the application classpath.
+[JVM-Node2] Loading config [akka.conf] from the application classpath.
+...
+[JVM-Node2] Hello from node 2
+[JVM-Node1] Hello from node 1
+[info] == multi-jvm / Test ==
+[info] == multi-jvm-run ==
+[success] Successful.</pre>
+</div>
+</div>
+</div>
+</div>
+
+
+      </div>
+      <div class="bottomnav">
+      
+        <p>
+        «&#160;&#160;<a href="configuration.html">Configuration</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="../index.html">Contents</a>
+        </p>
+
+      </div>
+
+    <div class="footer">
+        &copy; Copyright 2009-2011, Scalable Solutions AB.
+      Last updated on Apr 04, 2011.
+    </div>
+  </body>
+</html>

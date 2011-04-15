@@ -1,0 +1,271 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Durable Mailboxes &mdash; Cloudy Akka</title>
+    <link rel="stylesheet" href="../_static/akka.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/print.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/theme_extras.js"></script>
+    <link rel="top" title="Cloudy Akka" href="../index.html" />
+    <link rel="next" title="Monitoring" href="monitoring.html" />
+    <link rel="prev" title="Clustering" href="clustering.html" /> 
+  </head>
+  <body>
+      <div class="header">
+        <a href="../index.html">
+          <img class="logo" src="../_static/logo.png" alt="Logo"/>
+        </a>
+      </div>
+      <div class="topnav">
+      
+        <p>
+        «&#160;&#160;<a href="clustering.html">Clustering</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="../index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="monitoring.html">Monitoring</a>&#160;&#160;»
+        </p>
+
+      </div>
+      <div class="content">
+        
+        
+  <div class="section" id="durable-mailboxes">
+<h1>Durable Mailboxes<a class="headerlink" href="#durable-mailboxes" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
+<p>Cloudy Akka supports a set of durable mailboxes. A durable mailbox is a
+replacement for the standard actor mailbox that is durable. What this means in
+practice is that if there are pending messages in the actor&#8217;s mailbox when the
+node of the actor resides on crashes, then when you restart the node, the actor
+will be able to continue processing as if nothing had happened; with all pending
+messages still in its mailbox.</p>
+<div class="sidebar">
+<p class="first sidebar-title"><strong>IMPORTANT</strong></p>
+<p class="last">None of these mailboxes work with blocking message send, e.g. the message send
+operations that are relying on futures; <tt class="docutils literal"><span class="pre">!!</span></tt>, <tt class="docutils literal"><span class="pre">!!!</span></tt>, <tt class="docutils literal"><span class="pre">sendRequestReply</span></tt>
+and <tt class="docutils literal"><span class="pre">sendRequestReplyFuture</span></tt>. If the node has crashed and then restarted, the
+thread that was blocked waiting for the reply is gone and there is no way we can
+deliver the message.</p>
+</div>
+<p>The durable mailboxes currently supported are:</p>
+<blockquote>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">FileDurableMailboxStorage</span></tt> &#8211; backed by a journaling transaction log on the local file system</li>
+<li><tt class="docutils literal"><span class="pre">RedisDurableMailboxStorage</span></tt> &#8211; backed by Redis</li>
+<li><tt class="docutils literal"><span class="pre">ZooKeeperDurableMailboxStorage</span></tt> &#8211; backed by ZooKeeper</li>
+<li><tt class="docutils literal"><span class="pre">BeanstalkDurableMailboxStorage</span></tt> &#8211; backed by Beanstalkd</li>
+</ul>
+</blockquote>
+<p>We&#8217;ll walk through each one of these in detail in the sections below.</p>
+<p>Soon Cloudy Akka will also have:</p>
+<blockquote>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">AmqpDurableMailboxStorage</span></tt> &#8211; AMQP based mailbox (default RabbitMQ)</li>
+<li><tt class="docutils literal"><span class="pre">JmsDurableMailboxStorage</span></tt> &#8211; JMS based mailbox (default ActiveMQ)</li>
+</ul>
+</blockquote>
+</div>
+<div class="section" id="file-based-durable-mailbox">
+<h2>File-based durable mailbox<a class="headerlink" href="#file-based-durable-mailbox" title="Permalink to this headline">¶</a></h2>
+<p>This mailbox is backed by a journaling transaction log on the local file
+system. It is the simplest want to use since it does not require an extra
+infrastructure piece to administer, but it is usually sufficient and just what
+you need.</p>
+<p>The durable dispatchers and their configuration options reside in the <tt class="docutils literal"><span class="pre">akka.cloud.cluster</span></tt> package.</p>
+<p>You configure durable mailboxes through the &#8220;Cloudy Akka&#8221;-only durable dispatchers, the actor
+is oblivious to which type of mailbox it is using. Here is an example:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="k">val</span> <span class="n">dispatcher</span> <span class="k">=</span> <span class="nc">DurableEventBasedDispatcher</span><span class="o">(</span>
+  <span class="s">&quot;my:service&quot;</span><span class="o">,</span>
+  <span class="nc">FileDurableMailboxStorage</span><span class="o">)</span>
+<span class="c1">//Then set the actors dispatcher to this dispatcher</span>
+</pre></div>
+</div>
+<p>or for a thread-based durable dispatcher.</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="n">self</span><span class="o">.</span><span class="n">dispatcher</span> <span class="k">=</span> <span class="nc">DurableThreadBasedDispatcher</span><span class="o">(</span>
+  <span class="n">self</span><span class="o">,</span>
+  <span class="nc">FileDurableMailboxStorage</span><span class="o">)</span>
+</pre></div>
+</div>
+<p>There are 2 different durable dispatchers,
+<tt class="docutils literal"><span class="pre">DurableEventBasedDispatcher</span></tt> and <tt class="docutils literal"><span class="pre">DurableThreadBasedDispatcher</span></tt>,
+which are durable versions of <tt class="docutils literal"><span class="pre">ExecutorBasedEventDrivenDispatcher</span></tt> and <tt class="docutils literal"><span class="pre">ThreadBasedDispatcher</span></tt>.</p>
+<p>This gives you an excellent way of creating bulkheads in your application,
+where groups of actors sharing the same dispatcher also share the same backing storage.</p>
+<p><img alt="More info" class="align-middle" src="../_images/more.png" /> Read more about that in the <a class="reference external" href="http://doc.akka.io/dispatchers-scala">Akka Dispatcher Documentation</a>.</p>
+<p>You can also configure and tune the file-based durable mailbox. This is done in
+the <tt class="docutils literal"><span class="pre">akka.cloud.mailbox.file-based</span></tt> section in the <tt class="docutils literal"><span class="pre">akka.conf</span></tt> configuration
+file.</p>
+<div class="highlight-conf"><pre>akka {
+  cloud {
+    mailbox {
+      file-based {
+        directory-path = "./_mb"
+        max-items = 2147483647
+        max-size = 2147483647
+        max-items = 2147483647
+        max-age = 0
+        max-journal-size = 16777216 # 16 * 1024 * 1024
+        max-memory-size = 134217728 # 128 * 1024 * 1024
+        max-journal-overflow = 10
+        max-journal-size-absolute = 9223372036854775807
+        discard-old-when-full = on
+        keep-journal = on
+        sync-journal = off
+      }
+    }
+  }
+}</pre>
+</div>
+</div>
+<div class="section" id="redis-based-durable-mailbox">
+<h2>Redis-based durable mailbox<a class="headerlink" href="#redis-based-durable-mailbox" title="Permalink to this headline">¶</a></h2>
+<p>This mailbox is backed by a Redis queue. <a class="reference external" href="http://redis.io">Redis</a> Is a very
+fast NOSQL database that has a wide range of data structure abstractions, one of
+them is a queue which is what we are using in this implementation. This means
+that you have to start up a Redis server that can host these durable
+mailboxes. Read more in the Redis documentation on how to do that.</p>
+<p>Here is an example of how you can configure your dispatcher to use this mailbox:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="k">val</span> <span class="n">dispatcher</span> <span class="k">=</span> <span class="nc">DurableEventBasedDispatcher</span><span class="o">(</span>
+  <span class="s">&quot;my:service&quot;</span><span class="o">,</span>
+  <span class="nc">RedisDurableMailboxStorage</span><span class="o">)</span>
+</pre></div>
+</div>
+<p>or for a thread-based durable dispatcher.</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="n">self</span><span class="o">.</span><span class="n">dispatcher</span> <span class="k">=</span> <span class="nc">DurableThreadBasedDispatcher</span><span class="o">(</span>
+  <span class="n">self</span><span class="o">,</span>
+  <span class="nc">RedisDurableMailboxStorage</span><span class="o">)</span>
+</pre></div>
+</div>
+<p>You also need to configure the IP and port for the Redis server. This is done in
+the <tt class="docutils literal"><span class="pre">akka.cloud.mailbox.redis</span></tt> section in the <tt class="docutils literal"><span class="pre">akka.conf</span></tt> configuration
+file.</p>
+<div class="highlight-conf"><pre>akka {
+  cloud {
+    mailbox {
+      redis {
+        hostname = "127.0.0.1"
+        port = 6379
+      }
+    }
+  }
+}</pre>
+</div>
+</div>
+<div class="section" id="zookeeper-based-durable-mailbox">
+<h2>ZooKeeper-based durable mailbox<a class="headerlink" href="#zookeeper-based-durable-mailbox" title="Permalink to this headline">¶</a></h2>
+<p>This mailbox is backed by <a class="reference external" href="http://zookeeper.apache.org/">ZooKeeper</a>. ZooKeeper
+is a centralized service for maintaining configuration information, naming,
+providing distributed synchronization, and providing group services This means
+that you have to start up a ZooKeeper server (for production a ZooKeeper server
+ensamble) that can host these durable mailboxes. Read more in the ZooKeeper
+documentation on how to do that.</p>
+<p>Cloudy Akka is using ZooKeeper for many other things, for example the clustering
+support so if you&#8217;re using that you love to run a ZooKeeper server anyway and
+there will not be that much more work to set up this durable mailbox.</p>
+<p>Here is an example of how you can configure your dispatcher to use this mailbox:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="k">val</span> <span class="n">dispatcher</span> <span class="k">=</span> <span class="nc">DurableEventBasedDispatcher</span><span class="o">(</span>
+  <span class="s">&quot;my:service&quot;</span><span class="o">,</span>
+  <span class="nc">ZooKeeperDurableMailboxStorage</span><span class="o">)</span>
+</pre></div>
+</div>
+<p>or for a thread-based durable dispatcher.</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="n">self</span><span class="o">.</span><span class="n">dispatcher</span> <span class="k">=</span> <span class="nc">DurableThreadBasedDispatcher</span><span class="o">(</span>
+  <span class="n">self</span><span class="o">,</span>
+  <span class="nc">ZooKeeperDurableMailboxStorage</span><span class="o">)</span>
+</pre></div>
+</div>
+<p>You also need to configure ZooKeeper server addresses, timeouts, etc. This is
+done in the <tt class="docutils literal"><span class="pre">akka.cloud.mailbox.zookeeper</span></tt> section in the <tt class="docutils literal"><span class="pre">akka.conf</span></tt>
+configuration file.</p>
+<div class="highlight-conf"><pre>akka {
+  cloud {
+    mailbox {
+      zookeeper {
+        server-addresses = "localhost:2181"
+        session-timeout = 60
+        connection-timeout = 30
+        blocking-queue = on
+      }
+    }
+  }
+}</pre>
+</div>
+</div>
+<div class="section" id="beanstalk-based-durable-mailbox">
+<h2>Beanstalk-based durable mailbox<a class="headerlink" href="#beanstalk-based-durable-mailbox" title="Permalink to this headline">¶</a></h2>
+<p>This mailbox is backed by <a class="reference external" href="http://kr.github.com/beanstalkd/">Beanstalkd</a>.
+Beanstalk is a simple, fast work queue. This means that you have to start up a
+Beanstalk server that can host these durable mailboxes. Read more in the
+Beanstalk documentation on how to do that.</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="k">val</span> <span class="n">dispatcher</span> <span class="k">=</span> <span class="nc">DurableEventBasedDispatcher</span><span class="o">(</span>
+  <span class="s">&quot;my:service&quot;</span><span class="o">,</span>
+  <span class="nc">BeanstalkDurableMailboxStorage</span><span class="o">)</span>
+</pre></div>
+</div>
+<p>or for a thread-based durable dispatcher.</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="n">self</span><span class="o">.</span><span class="n">dispatcher</span> <span class="k">=</span> <span class="nc">DurableThreadBasedDispatcher</span><span class="o">(</span>
+  <span class="n">self</span><span class="o">,</span>
+  <span class="nc">BeanstalkDurableMailboxStorage</span><span class="o">)</span>
+</pre></div>
+</div>
+<p>You also need to configure the IP, and port, and so on, for the Beanstalk
+server. This is done in the <tt class="docutils literal"><span class="pre">akka.cloud.mailbox.beanstalk</span></tt> section in the
+<tt class="docutils literal"><span class="pre">akka.conf</span></tt> configuration file.</p>
+<div class="highlight-conf"><pre>akka {
+  cloud {
+    mailbox {
+      beanstalk {
+        hostname = "127.0.0.1"
+        port = 11300
+        reconnect-window = 5
+        message-submit-delay = 0
+        message-submit-timeout = 5
+        message-time-to-live = 120
+      }
+    }
+  }
+}</pre>
+</div>
+</div>
+</div>
+
+
+      </div>
+      <div class="bottomnav">
+      
+        <p>
+        «&#160;&#160;<a href="clustering.html">Clustering</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="../index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="monitoring.html">Monitoring</a>&#160;&#160;»
+        </p>
+
+      </div>
+
+    <div class="footer">
+        &copy; Copyright 2009-2011, Scalable Solutions AB.
+      Last updated on Apr 04, 2011.
+    </div>
+  </body>
+</html>
