@@ -1,0 +1,114 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Downloading and installing &mdash; Typesafe Documentation</title>
+    <link rel="stylesheet" href="../_static/typesafe.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/print.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/theme_extras.js"></script>
+    <link rel="top" title="Typesafe Documentation" href="../index.html" />
+    <link rel="up" title="Typesafe Stack" href="index.html" />
+    <link rel="next" title="Tutorials" href="../tutorials/index.html" />
+    <link rel="prev" title="What is the Typesafe Stack?" href="what-is-it.html" /> 
+  </head>
+  <body>
+      <div class="header">
+        <a href="../index.html">
+          <img class="logo" src="../_static/logo.png" alt="Logo"/>
+        </a>
+      </div>
+      <div class="topnav">
+      
+        <p>
+        «&#160;&#160;<a href="what-is-it.html">What is the Typesafe Stack?</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="../index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="../tutorials/index.html">Tutorials</a>&#160;&#160;»
+        </p>
+
+      </div>
+      <div class="content">
+        
+        
+  <div class="section" id="downloading-and-installing">
+<span id="downloading-installing"></span><h1>Downloading and installing<a class="headerlink" href="#downloading-and-installing" title="Permalink to this headline">¶</a></h1>
+<p>Download the Typesafe Stack from <a class="reference external" href="http://typesafe.com/stack/download">http://typesafe.com/stack/download</a>. There you can select the installer that fits your platform best:</p>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">.exe</span></tt> for Windows</li>
+<li><tt class="docutils literal"><span class="pre">.dmg</span></tt> for Mac</li>
+<li><tt class="docutils literal"><span class="pre">.jar</span></tt> for platform independent</li>
+</ul>
+<p>Now let&#8217;s install the stack by double-clicking on the installer. You are free to install only the components you need, the installer will make sure that dependencies among components are correctly resolved.</p>
+<p>I choose to install the stack into <tt class="docutils literal"><span class="pre">/Users/jboner/tools/typesafe-stack</span></tt>.</p>
+<p>If we now step into the directory where we installed the stack in you can see that the distribution looks like this (for a full install).</p>
+<div class="highlight-text"><div class="highlight"><pre>$ cd /Users/jboner/tools/typesafe-stack
+$ ls -l
+total 24
+drwxr-xr-x  14 jboner  staff   476 May  9 13:21 .
+drwxr-xr-x   3 jboner  staff   102 May  9 13:20 ..
+drwxr-xr-x   5 jboner  staff   170 May  9 13:25 Uninstaller
+drwxr-xr-x  18 jboner  staff   612 May  9 13:21 bin
+drwxr-xr-x   6 jboner  staff   204 May  9 13:21 config
+drwxr-xr-x   3 jboner  staff   102 May  9 13:21 deploy
+drwxr-xr-x   9 jboner  staff   306 May  9 13:21 doc
+drwxr-xr-x  74 jboner  staff  2516 May  9 13:21 lib
+drwxr-xr-x   3 jboner  staff   102 May  9 13:20 man
+drwxr-xr-x   6 jboner  staff   204 May  9 13:20 meta
+drwxr-xr-x   6 jboner  staff   204 May  9 13:20 misc
+drwxr-xr-x   7 jboner  staff   238 May  9 13:20 src
+</pre></div>
+</div>
+<p>The following is a short description of each folders&#8217; content.</p>
+<ul class="simple">
+<li>In the <tt class="docutils literal"><span class="pre">Uninstaller</span></tt> directory contains an uninstaller program that can be used to fully remove the typesafe-stack.</li>
+<li>In the <tt class="docutils literal"><span class="pre">bin</span></tt> directory we have all the scripts, both for Scala and Akka.</li>
+<li>In the <tt class="docutils literal"><span class="pre">config</span></tt> directory we have Akka&#8217;s configuration files, e.g. <tt class="docutils literal"><span class="pre">akka.conf</span></tt> and the reference config <tt class="docutils literal"><span class="pre">akka-reference.conf</span></tt>.</li>
+<li>In the <tt class="docutils literal"><span class="pre">deploy</span></tt> directory you put Akka applications you want to be loaded by the Akka Microkernel</li>
+<li>In the <tt class="docutils literal"><span class="pre">doc</span></tt> directory we have the documentation.</li>
+<li>In the <tt class="docutils literal"><span class="pre">lib</span></tt> directory we have all the JARs, both Scala, Akka and their dependency JARs.</li>
+<li>In the <tt class="docutils literal"><span class="pre">man</span></tt> directory we have Unix documentation pages for all Scala scripts located in the <tt class="docutils literal"><span class="pre">bin</span></tt> directory.</li>
+<li>In the <tt class="docutils literal"><span class="pre">misc</span></tt> directory we have some tool for Scala.</li>
+<li>In the <tt class="docutils literal"><span class="pre">src</span></tt> directory we have all sources&#8217; JARs, both for Scala and Akka.</li>
+</ul>
+</div>
+
+
+      </div>
+      <div class="bottomnav">
+      
+        <p>
+        «&#160;&#160;<a href="what-is-it.html">What is the Typesafe Stack?</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="../index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="../tutorials/index.html">Tutorials</a>&#160;&#160;»
+        </p>
+
+      </div>
+
+    <div class="footer">
+        &copy; Copyright 2011, Typesafe Inc..
+      Last updated on May 10, 2011.
+    </div>
+  </body>
+</html>
