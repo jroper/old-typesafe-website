@@ -1,4 +1,0 @@
-Replication
-===========
-
-Not implemented yet.

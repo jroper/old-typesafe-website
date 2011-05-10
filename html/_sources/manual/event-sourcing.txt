@@ -1,4 +1,0 @@
-Event Sourcing
-==============
-
-Not implemented yet.

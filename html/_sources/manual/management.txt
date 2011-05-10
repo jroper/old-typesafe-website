@@ -1,7 +1,0 @@
-Management
-==========
-
-.. todo:: Some of the MBeans in the Monitoring documentation involve management
-   operations. Move over those here and document them.
-
-For now see the Monitoring docs.
