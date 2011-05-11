@@ -1,6 +1,6 @@
 .. _getting-started-first-java:
 
-Getting Started Tutorial (Java): First Chapter
+Getting Started Tutorial (Java)
 ==============================================
 
 Introduction

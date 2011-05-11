@@ -1,5 +1,5 @@
-Contents
-========
+Getting Started with the Typesafe Stack
+=======================================
 
 .. toctree::
    :maxdepth: 2
