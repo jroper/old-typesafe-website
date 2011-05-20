@@ -15,7 +15,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '1.1',
+        VERSION:     '1.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -90,6 +90,14 @@ drwxr-xr-x   7 jboner  staff   238 May  9 13:20 src
 <li>In the <tt class="docutils literal"><span class="pre">misc</span></tt> directory we have some tool for Scala.</li>
 <li>In the <tt class="docutils literal"><span class="pre">src</span></tt> directory we have all sources&#8217; JARs, both for Scala and Akka.</li>
 </ul>
+<div class="section" id="troubleshooting">
+<h2>Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permalink to this headline">¶</a></h2>
+<p>That may happen if the installer is unable to contact the server in order to complete the necessary downloads; it may happen in some cases if the client is behind a firewall: it&#8217;s matter of configuring Java networking.</p>
+<p>The simplest solution is just to download the offline installer. Alternatively, try this approach:</p>
+<div class="highlight-text"><div class="highlight"><pre>java -DproxyHost=yourhost -DproxyPort=80 -DproxySet=true -jar typesafe-installer-1.0.jar
+</pre></div>
+</div>
+</div>
 </div>
 
 
@@ -108,7 +116,7 @@ drwxr-xr-x   7 jboner  staff   238 May  9 13:20 src
 
     <div class="footer">
         &copy; Copyright 2011, Typesafe Inc..
-      Last updated on May 11, 2011.
+      Last updated on May 18, 2011.
     </div>
   </body>
 </html>

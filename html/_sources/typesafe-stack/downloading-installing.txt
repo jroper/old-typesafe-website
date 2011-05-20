@@ -1,7 +1,7 @@
 .. _downloading-installing:
 
 Downloading and installing
-============================================================
+==========================
 
 Download the Typesafe Stack from `http://typesafe.com/stack/download <http://typesafe.com/stack/download>`_. There you can select the installer that fits your platform best:
 
@@ -44,3 +44,14 @@ The following is a short description of each folders' content.
 - In the ``man`` directory we have Unix documentation pages for all Scala scripts located in the ``bin`` directory.
 - In the ``misc`` directory we have some tool for Scala.
 - In the ``src`` directory we have all sources' JARs, both for Scala and Akka.
+
+Troubleshooting
+---------------
+
+That may happen if the installer is unable to contact the server in order to complete the necessary downloads; it may happen in some cases if the client is behind a firewall: it's matter of configuring Java networking.
+
+The simplest solution is just to download the offline installer. Alternatively, try this approach: 
+
+.. code-block:: text
+
+    java -DproxyHost=yourhost -DproxyPort=80 -DproxySet=true -jar typesafe-installer-1.0.jar
