@@ -1,0 +1,116 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Migration Manager: Step-by-step Guide &mdash; Typesafe Documentation</title>
+    <link rel="stylesheet" href="../_static/typesafe.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/print.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/theme_extras.js"></script>
+    <link rel="top" title="Typesafe Documentation" href="../index.html" />
+    <link rel="up" title="Tutorials" href="index.html" />
+    <link rel="prev" title="Getting Started Tutorial (Java)" href="getting-started-first-java.html" /> 
+  </head>
+  <body>
+      <div class="header">
+        <a href="../index.html">
+          <img class="logo" src="../_static/logo.png" alt="Logo"/>
+        </a>
+      </div>
+      <div class="topnav">
+      
+        <p>
+        «&#160;&#160;<a href="getting-started-first-java.html">Getting Started Tutorial (Java)</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="../index.html">Contents</a>
+        </p>
+
+      </div>
+      <div class="content">
+        
+        
+  <div class="section" id="migration-manager-step-by-step-guide">
+<span id="id1"></span><h1>Migration Manager: Step-by-step Guide<a class="headerlink" href="#migration-manager-step-by-step-guide" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="introduction">
+<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
+<p>Welcome to the step-by-step guide to the Migration Manager(MiMa).</p>
+<p>MiMa can report binary modifications that may lead the JVM throwing a <a class="reference external" href="http://download.oracle.com/javase/6/docs/api/java/lang/LinkageError.html">java.lang.LinkageError</a> at runtime. LinkageError are usually the consequence of modifications in classes/members signature.</p>
+<p>MiMa compares all classfiles of two released libraries and reports all source of incompatibilities that may lead to a LinkageError. Given that information, you can easily locate the sources of incompatibilities and take the necessary steps to eliminate them. MiMa provides you, the Libraries maintainers, with a tool that can greatly automates and simplifies the process of ensuring the release-to-release binary compatibility of your libraries.</p>
+<p>A key aspect of MiMa to be aware of is that it only looks for syntactic binary incompatibilities. The semantic binary incompatibilities (such as adding or removing a method invocation) are not considered. This is a pragmatic approach as it is up to you, the library maintainer, to make sure that no semantic changes have occurred between two binary compatible releases. If a semantic change occurred, then you should make sure to provide this information as part of the new release change&#8217;s list.</p>
+<p>In addition, it is worth mentioning that binary compatibility does not imply source compatibility, i.e., some of the changes that are considered compatible at the bytecode level may still break a codebase that depends on it. Interestingly, this is not an issue intrinsic to the Scala language, also in the Java language binary compatibility does not imply source compatibility.</p>
+<p>MiMa can be currently used to diagnose binary incompatibilities. Future extensions to MiMa will provide an automatic means to resolve many binary incompatibilities by  rewriting client&#8217;s bytecode. More information about this will be available in the future.</p>
+<p>The current beta version of MiMa provides the incompatibilities reporting capability.</p>
+</div>
+<div class="section" id="prerequisites">
+<h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this headline">¶</a></h2>
+<p>If you haven&#8217;t yet download the Migration Manager, you can do so <a class="reference external" href="http://typesafe.com/technology/migration-manager">here</a>. Three different packages are available so that you can pick the one that suits your platform.</p>
+<p>This guide assumes that you have Java 1.6 or later installed on you machine and <tt class="docutils literal"><span class="pre">java</span></tt> on your <tt class="docutils literal"><span class="pre">PATH</span></tt>.</p>
+<p>You need to make sure that <tt class="docutils literal"><span class="pre">$JAVA_HOME</span></tt> environment variable is set to the root of the Java distribution. You also need to make sure that the <tt class="docutils literal"><span class="pre">$JAVA_HOME/bin</span></tt> is on your <tt class="docutils literal"><span class="pre">PATH</span></tt>.</p>
+<div class="highlight-text"><div class="highlight"><pre>$ export JAVA_HOME=..root of java distribution..
+$ export PATH=$PATH:$JAVA_HOME/bin
+</pre></div>
+</div>
+<p>You can test your installation by invoking <tt class="docutils literal"><span class="pre">java</span></tt>.</p>
+<div class="highlight-text"><div class="highlight"><pre>$ java -version
+java version &quot;1.6.0_24&quot;
+Java(TM) SE Runtime Environment (build 1.6.0_24-b07-334-10M3326)
+Java HotSpot(TM) 64-Bit Server VM (build 19.1-b02-334, mixed mode)
+</pre></div>
+</div>
+</div>
+<div class="section" id="start-mima">
+<h2>Start MiMa<a class="headerlink" href="#start-mima" title="Permalink to this headline">¶</a></h2>
+<p>Simply double click on the downloaded launcher and MiMa will start. If this is the first time you are running MiMa you will be asked to accept the End User License Agreement (EULA). Once accepted, it will remember it so that you will not be asked again.</p>
+<img alt="../_images/1-eula.png" src="../_images/1-eula.png" />
+<p>After clicking <tt class="docutils literal"><span class="pre">Next</span></tt> you will be asked to select the libraries&#8217; JAR that you want to compare.</p>
+<img alt="../_images/2-select-libs.png" src="../_images/2-select-libs.png" />
+<p>To correctly perform the analysis MiMa needs that all the library&#8217;s dependencies are added in the <tt class="docutils literal"><span class="pre">Library</span> <span class="pre">classpath</span></tt>. For convenience, MiMa tries to automatically add the Java Runtime Environment (JRE) libraries.</p>
+<img alt="../_images/3-select-lib-classpath.png" src="../_images/3-select-lib-classpath.png" />
+<p>Once the library&#8217;s classpath has been correctly set up, click <tt class="docutils literal"><span class="pre">Next</span></tt>. This will start the analysis and MiMa will compare all classfiles looking for binary incompatibilities between the two releases. MiMa analysis time is typically short however it does depends on the size of your library and its dependencies. When MiMa analysis is complete, you will see a table containing a list of diagnosed incompatibilities. When clicking on a row, a panel providing all details about the selected incompatibility is displayed. Simply use the up/down keyboards&#8217; keys to navigate through the incompatibilities, the panel displaying the description will update accordingly. Filters can be composed to narrow down a specific issue.</p>
+<img alt="../_images/4-result-issue-selected.png" src="../_images/4-result-issue-selected.png" />
+<p>Last, in the bottom-right corner it is reported the number of collected incompatibilities.</p>
+<img alt="../_images/4-result-number-incompatibilities.png" src="../_images/4-result-number-incompatibilities.png" />
+<p>You will see that entries are marked as &#8220;unfixable&#8221; or &#8220;upgradable&#8221;. In the future MiMa will give you the ability to correct &#8220;upgradable&#8221; automatically by  rewriting the client&#8217;s bytecode. On the other hand entries marked as &#8220;unfixable&#8221; require that the library maintainers corrects the library code before releasing.</p>
+</div>
+<div class="section" id="list-of-incompatibilities-checked-by-mima">
+<h2>List of incompatibilities checked by MiMa<a class="headerlink" href="#list-of-incompatibilities-checked-by-mima" title="Permalink to this headline">¶</a></h2>
+<p>This section is coming soon.</p>
+</div>
+</div>
+
+
+      </div>
+      <div class="bottomnav">
+      
+        <p>
+        «&#160;&#160;<a href="getting-started-first-java.html">Getting Started Tutorial (Java)</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="../index.html">Contents</a>
+        </p>
+
+      </div>
+
+    <div class="footer">
+        &copy; Copyright 2011, Typesafe Inc..
+      Last updated on Jun 04, 2011.
+    </div>
+  </body>
+</html>

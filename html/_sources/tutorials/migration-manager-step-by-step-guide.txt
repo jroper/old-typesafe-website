@@ -1,0 +1,75 @@
+.. _migration-manager-step-by-step-guide:
+
+Migration Manager: Step-by-step Guide
+============================================================
+
+Introduction
+------------
+
+Welcome to the step-by-step guide to the Migration Manager(MiMa).
+
+MiMa can report binary modifications that may lead the JVM throwing a `java.lang.LinkageError <http://download.oracle.com/javase/6/docs/api/java/lang/LinkageError.html>`_ at runtime. LinkageError are usually the consequence of modifications in classes/members signature. 
+
+MiMa compares all classfiles of two released libraries and reports all source of incompatibilities that may lead to a LinkageError. Given that information, you can easily locate the sources of incompatibilities and take the necessary steps to eliminate them. MiMa provides you, the Libraries maintainers, with a tool that can greatly automates and simplifies the process of ensuring the release-to-release binary compatibility of your libraries.  
+
+A key aspect of MiMa to be aware of is that it only looks for syntactic binary incompatibilities. The semantic binary incompatibilities (such as adding or removing a method invocation) are not considered. This is a pragmatic approach as it is up to you, the library maintainer, to make sure that no semantic changes have occurred between two binary compatible releases. If a semantic change occurred, then you should make sure to provide this information as part of the new release change's list.
+
+In addition, it is worth mentioning that binary compatibility does not imply source compatibility, i.e., some of the changes that are considered compatible at the bytecode level may still break a codebase that depends on it. Interestingly, this is not an issue intrinsic to the Scala language, also in the Java language binary compatibility does not imply source compatibility.
+
+MiMa can be currently used to diagnose binary incompatibilities. Future extensions to MiMa will provide an automatic means to resolve many binary incompatibilities by  rewriting client's bytecode. More information about this will be available in the future.
+
+The current beta version of MiMa provides the incompatibilities reporting capability. 
+
+
+Prerequisites
+-------------
+
+If you haven't yet download the Migration Manager, you can do so `here <http://typesafe.com/technology/migration-manager>`_. Three different packages are available so that you can pick the one that suits your platform.
+
+This guide assumes that you have Java 1.6 or later installed on you machine and ``java`` on your ``PATH``.
+ 
+You need to make sure that ``$JAVA_HOME`` environment variable is set to the root of the Java distribution. You also need to make sure that the ``$JAVA_HOME/bin`` is on your ``PATH``.
+
+.. code-block:: text
+
+    $ export JAVA_HOME=..root of java distribution..
+    $ export PATH=$PATH:$JAVA_HOME/bin
+
+You can test your installation by invoking ``java``.
+
+.. code-block:: text
+
+    $ java -version
+    java version "1.6.0_24"
+    Java(TM) SE Runtime Environment (build 1.6.0_24-b07-334-10M3326)
+    Java HotSpot(TM) 64-Bit Server VM (build 19.1-b02-334, mixed mode)
+
+Start MiMa
+---------------
+
+Simply double click on the downloaded launcher and MiMa will start. If this is the first time you are running MiMa you will be asked to accept the End User License Agreement (EULA). Once accepted, it will remember it so that you will not be asked again.
+
+.. image:: ../images/mima/1-eula.png
+
+After clicking ``Next`` you will be asked to select the libraries' JAR that you want to compare. 
+
+.. image:: ../images/mima/2-select-libs.png
+
+To correctly perform the analysis MiMa needs that all the library's dependencies are added in the ``Library classpath``. For convenience, MiMa tries to automatically add the Java Runtime Environment (JRE) libraries. 
+
+.. image:: ../images/mima/3-select-lib-classpath.png
+
+Once the library's classpath has been correctly set up, click ``Next``. This will start the analysis and MiMa will compare all classfiles looking for binary incompatibilities between the two releases. MiMa analysis time is typically short however it does depends on the size of your library and its dependencies. When MiMa analysis is complete, you will see a table containing a list of diagnosed incompatibilities. When clicking on a row, a panel providing all details about the selected incompatibility is displayed. Simply use the up/down keyboards' keys to navigate through the incompatibilities, the panel displaying the description will update accordingly. Filters can be composed to narrow down a specific issue.
+
+.. image:: ../images/mima/4-result-issue-selected.png
+
+Last, in the bottom-right corner it is reported the number of collected incompatibilities.
+
+.. image:: ../images/mima/4-result-number-incompatibilities.png
+
+You will see that entries are marked as "unfixable" or "upgradable". In the future MiMa will give you the ability to correct "upgradable" automatically by  rewriting the client's bytecode. On the other hand entries marked as "unfixable" require that the library maintainers corrects the library code before releasing.
+
+List of incompatibilities checked by MiMa 
+----------
+
+This section is coming soon.

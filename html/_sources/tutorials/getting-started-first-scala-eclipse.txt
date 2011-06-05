@@ -388,7 +388,7 @@ Eclipse builds your project on every save when ``Project/Build Automatically`` i
     AKKA_HOME is defined as [/Users/jboner/tools/typesafe-stack]
     loading config from [/Users/jboner/tools/typesafe-stack/config/akka.conf].
 
-    Pi estimate:        3.141592643589326
+    Pi estimate:        3.1435501812459323
     Calculation time:   858 millis
 
 If you have not defined an the ``AKKA_HOME`` environment variable then Akka can't find the ``akka.conf`` configuration file and will print out a ``Can’t load akka.conf`` warning. This is ok since it will then just use the defaults.

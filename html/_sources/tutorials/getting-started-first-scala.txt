@@ -510,7 +510,7 @@ When we have compiled the source file we are ready to run the application. This 
     AKKA_HOME is defined as [/Users/jboner/tools/typesafe-stack]
     loading config from [/Users/jboner/tools/typesafe-stack/config/akka.conf].
 
-    Pi estimate:        3.141592643589326
+    Pi estimate:        3.1435501812459323
     Calculation time:   858 millis
 
 Yippee! It is working.
@@ -536,7 +536,7 @@ When this in done we can run our application directly inside ``sbt``.
 
     > run
     ...
-    Pi estimate:        3.141592643589326
+    Pi estimate:        3.1435501812459323
     Calculation time:   942 millis
 
 Yippee! It is working.

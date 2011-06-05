@@ -7,4 +7,5 @@ Tutorials
    getting-started-first-scala
    getting-started-first-scala-eclipse
    getting-started-first-java
+   migration-manager-step-by-step-guide
 
