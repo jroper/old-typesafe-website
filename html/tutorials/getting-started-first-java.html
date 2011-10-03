@@ -15,7 +15,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '1.0',
+        VERSION:     '1.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -63,7 +63,7 @@
 </div>
 <div class="section" id="tutorial-source-code">
 <h2>Tutorial source code<a class="headerlink" href="#tutorial-source-code" title="Permalink to this headline">¶</a></h2>
-<p>If you want don&#8217;t want to type in the code and/or set up a Maven project then you can check out the full tutorial from the Akka GitHub repository. It is in the <tt class="docutils literal"><span class="pre">akka-tutorials/akka-tutorial-first</span></tt> module. You can also browse it online <a class="reference external" href="https://github.com/jboner/akka/tree/master/akka-tutorials/akka-tutorial-first">here</a>, with the actual source code <a class="reference external" href="https://github.com/jboner/akka/blob/master/akka-tutorials/akka-tutorial-first/src/main/java/Pi.java">here</a>.</p>
+<p>If you want don&#8217;t want to type in the code and/or set up a Maven project then you can check out the full tutorial from the Akka GitHub repository. It is in the <tt class="docutils literal"><span class="pre">akka-tutorials/akka-tutorial-first</span></tt> module. You can also browse it online <a class="reference external" href="https://github.com/jboner/akka/tree/v1.2/akka-tutorials/akka-tutorial-first">here</a>, with the actual source code <a class="reference external" href="https://github.com/jboner/akka/blob/v1.2/akka-tutorials/akka-tutorial-first/src/main/java/Pi.java">here</a>.</p>
 <p>To check out the code using Git invoke the following.</p>
 <div class="highlight-text"><div class="highlight"><pre>$ git clone git://github.com/jboner/akka.git
 </pre></div>
@@ -75,7 +75,7 @@
 </div>
 <div class="section" id="prerequisites">
 <h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this headline">¶</a></h2>
-<p>For this tutorial we need the <tt class="docutils literal"><span class="pre">scala-library.jar</span></tt> JAR and the <tt class="docutils literal"><span class="pre">akka-actor-1.1.jar</span></tt> JAR both in the <tt class="docutils literal"><span class="pre">lib</span></tt> directory of your Typesafe Stack installation. If you haven&#8217;t yet installed the Typesafe Stack, read the <a class="reference internal" href="../typesafe-stack/downloading-installing.html#downloading-installing"><em>Downloading and installing</em></a> instructions. For this tutorial we only need the Scala and Akka Actors modules. But feel free to install the full stack if you want to.</p>
+<p>For this tutorial we need the <tt class="docutils literal"><span class="pre">scala-library.jar</span></tt> JAR and the <tt class="docutils literal"><span class="pre">akka-actor-1.2.jar</span></tt> JAR both in the <tt class="docutils literal"><span class="pre">lib</span></tt> directory of your Typesafe Stack installation. If you haven&#8217;t yet installed the Typesafe Stack, read the <a class="reference internal" href="../typesafe-stack/downloading-installing.html#downloading-installing"><em>Downloading and installing</em></a> instructions. For this tutorial we only need the Scala and Akka Actors modules. But feel free to install the full stack if you want to.</p>
 <p>This tutorial also assumes that you have Java 1.6 or later installed on you machine and <tt class="docutils literal"><span class="pre">java</span></tt> on your <tt class="docutils literal"><span class="pre">PATH</span></tt>. You also need to know how to run commands in a shell (ZSH, Bash, DOS etc.) and a decent text editor or IDE to type in the Scala code.</p>
 <p>You need to make sure that <tt class="docutils literal"><span class="pre">$JAVA_HOME</span></tt> environment variable is set to the root of the Java distribution. You also need to make sure that the <tt class="docutils literal"><span class="pre">$JAVA_HOME/bin</span></tt> is on your <tt class="docutils literal"><span class="pre">PATH</span></tt>.</p>
 <div class="highlight-text"><div class="highlight"><pre>$ export JAVA_HOME=..root of java distribution..
@@ -142,7 +142,7 @@ Java HotSpot(TM) 64-Bit Server VM (build 19.1-b02-334, mixed mode)
         <span class="nt">&lt;dependency&gt;</span>
             <span class="nt">&lt;groupId&gt;</span>se.scalablesolutions.akka<span class="nt">&lt;/groupId&gt;</span>
             <span class="nt">&lt;artifactId&gt;</span>akka-actor<span class="nt">&lt;/artifactId&gt;</span>
-            <span class="nt">&lt;version&gt;</span>1.1<span class="nt">&lt;/version&gt;</span>
+            <span class="nt">&lt;version&gt;</span>1.2<span class="nt">&lt;/version&gt;</span>
         <span class="nt">&lt;/dependency&gt;</span>
     <span class="nt">&lt;/dependencies&gt;</span>
 
@@ -694,7 +694,7 @@ Calculation time:   939 millis
 
     <div class="footer">
         &copy; Copyright 2011, Typesafe Inc..
-      Last updated on Jun 04, 2011.
+      Last updated on Oct 03, 2011.
     </div>
   </body>
 </html>

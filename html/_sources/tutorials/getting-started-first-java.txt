@@ -23,8 +23,8 @@ Tutorial source code
 
 If you want don't want to type in the code and/or set up a Maven project then you can check out the full tutorial from the Akka GitHub repository. It is in the ``akka-tutorials/akka-tutorial-first`` module. You can also browse it online `here`__, with the actual source code `here`__.
 
-__ https://github.com/jboner/akka/tree/master/akka-tutorials/akka-tutorial-first
-__ https://github.com/jboner/akka/blob/master/akka-tutorials/akka-tutorial-first/src/main/java/Pi.java
+__ https://github.com/jboner/akka/tree/v1.2/akka-tutorials/akka-tutorial-first
+__ https://github.com/jboner/akka/blob/v1.2/akka-tutorials/akka-tutorial-first/src/main/java/Pi.java
 
 To check out the code using Git invoke the following.
 
@@ -41,7 +41,7 @@ Then you can navigate down to the tutorial.
 Prerequisites
 -------------
 
-For this tutorial we need the ``scala-library.jar`` JAR and the ``akka-actor-1.1.jar`` JAR both in the ``lib`` directory of your Typesafe Stack installation. If you haven't yet installed the Typesafe Stack, read the :ref:`downloading-installing` instructions. For this tutorial we only need the Scala and Akka Actors modules. But feel free to install the full stack if you want to.
+For this tutorial we need the ``scala-library.jar`` JAR and the ``akka-actor-1.2.jar`` JAR both in the ``lib`` directory of your Typesafe Stack installation. If you haven't yet installed the Typesafe Stack, read the :ref:`downloading-installing` instructions. For this tutorial we only need the Scala and Akka Actors modules. But feel free to install the full stack if you want to.
 
 This tutorial also assumes that you have Java 1.6 or later installed on you machine and ``java`` on your ``PATH``. You also need to know how to run commands in a shell (ZSH, Bash, DOS etc.) and a decent text editor or IDE to type in the Scala code.
 
@@ -127,7 +127,7 @@ We also need to edit the ``pom.xml`` build file. Let's add the dependency we nee
             <dependency>
                 <groupId>se.scalablesolutions.akka</groupId>
                 <artifactId>akka-actor</artifactId>
-                <version>1.1</version>
+                <version>1.2</version>
             </dependency>
         </dependencies>
 

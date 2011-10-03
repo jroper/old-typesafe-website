@@ -15,7 +15,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '1.0',
+        VERSION:     '1.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -69,7 +69,7 @@
 </div>
 <div class="section" id="tutorial-source-code">
 <h2>Tutorial source code<a class="headerlink" href="#tutorial-source-code" title="Permalink to this headline">¶</a></h2>
-<p>If you want don&#8217;t want to type in the code and/or set up an SBT project then you can check out the full tutorial from the Akka GitHub repository. It is in the <tt class="docutils literal"><span class="pre">akka-tutorials/akka-tutorial-first</span></tt> module. You can also browse it online <a class="reference external" href="https://github.com/jboner/akka/tree/master/akka-tutorials/akka-tutorial-first">here</a>, with the actual source code <a class="reference external" href="https://github.com/jboner/akka/blob/master/akka-tutorials/akka-tutorial-first/src/main/scala/Pi.scala">here</a>.</p>
+<p>If you don&#8217;t want to type in the code and/or set up an SBT project then you can check out the full tutorial from the Akka GitHub repository. It is in the <tt class="docutils literal"><span class="pre">akka-tutorials/akka-tutorial-first</span></tt> module. You can also browse it online <a class="reference external" href="https://github.com/jboner/akka/tree/v1.2/akka-tutorials/akka-tutorial-first">here</a>, with the actual source code <a class="reference external" href="https://github.com/jboner/akka/blob/v1.2/akka-tutorials/akka-tutorial-first/src/main/scala/Pi.scala">here</a>.</p>
 <p>To check out the code using Git invoke the following.</p>
 <div class="highlight-text"><div class="highlight"><pre>$ git clone git://github.com/jboner/akka.git
 </pre></div>
@@ -81,7 +81,7 @@
 </div>
 <div class="section" id="prerequisites">
 <h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this headline">¶</a></h2>
-<p>For this tutorial we need the <tt class="docutils literal"><span class="pre">scala-library.jar</span></tt> JAR and the <tt class="docutils literal"><span class="pre">akka-actor-1.1.jar</span></tt> JAR both in the <tt class="docutils literal"><span class="pre">lib</span></tt> directory of your Typesafe Stack installation. If you haven&#8217;t yet installed the Typesafe Stack, read the <a class="reference internal" href="../typesafe-stack/downloading-installing.html#downloading-installing"><em>Downloading and installing</em></a> instructions. For this tutorial we only need the Scala and Akka Actors modules. But feel free to install the full stack if you want to.</p>
+<p>For this tutorial we need the <tt class="docutils literal"><span class="pre">scala-library.jar</span></tt> JAR and the <tt class="docutils literal"><span class="pre">akka-actor-1.2.jar</span></tt> JAR both in the <tt class="docutils literal"><span class="pre">lib</span></tt> directory of your Typesafe Stack installation. If you haven&#8217;t yet installed the Typesafe Stack, read the <a class="reference internal" href="../typesafe-stack/downloading-installing.html#downloading-installing"><em>Downloading and installing</em></a> instructions. For this tutorial we only need the Scala and Akka Actors modules. But feel free to install the full stack if you want to.</p>
 <p>This tutorial also assumes that you have Java 1.6 or later installed on you machine and <tt class="docutils literal"><span class="pre">java</span></tt> on your <tt class="docutils literal"><span class="pre">PATH</span></tt>. You also need to know how to run commands in a shell (ZSH, Bash, DOS etc.) and <a class="reference external" href="http://www.eclipse.org/downloads/">Eclipse version 3.6.x (Helios)</a>.</p>
 <p>You need to make sure that <tt class="docutils literal"><span class="pre">$JAVA_HOME</span></tt> environment variable is set to the root of the Java distribution. You also need to make sure that the <tt class="docutils literal"><span class="pre">$JAVA_HOME/bin</span></tt> is on your <tt class="docutils literal"><span class="pre">PATH</span></tt>.</p>
 <div class="highlight-text"><div class="highlight"><pre>$ export JAVA_HOME=..root of java distribution..
@@ -107,23 +107,23 @@ $ echo $AKKA_HOME
 </div>
 <p>Akka is very modular and has many JARs for containing different features. The core distribution has seven modules:</p>
 <ul class="simple">
-<li><tt class="docutils literal"><span class="pre">akka-actor-1.1.jar</span></tt> &#8211; Standard Actors</li>
-<li><tt class="docutils literal"><span class="pre">akka-typed-actor-1.1.jar</span></tt> &#8211; Typed Actors</li>
-<li><tt class="docutils literal"><span class="pre">akka-remote-1.1.jar</span></tt> &#8211; Remote Actors</li>
-<li><tt class="docutils literal"><span class="pre">akka-stm-1.1.jar</span></tt> &#8211; STM (Software Transactional Memory), transactors and transactional datastructures</li>
-<li><tt class="docutils literal"><span class="pre">akka-http-1.1.jar</span></tt> &#8211; Akka Mist for continuation-based asynchronous HTTP and also Jersey integration</li>
-<li><tt class="docutils literal"><span class="pre">akka-slf4j-1.1.jar</span></tt> &#8211; SLF4J Event Handler Listener for logging with SLF4J</li>
-<li><tt class="docutils literal"><span class="pre">akka-testkit-1.1.jar</span></tt> &#8211; Toolkit for testing Actors</li>
+<li><tt class="docutils literal"><span class="pre">akka-actor-1.2.jar</span></tt> &#8211; Standard Actors</li>
+<li><tt class="docutils literal"><span class="pre">akka-typed-actor-1.2.jar</span></tt> &#8211; Typed Actors</li>
+<li><tt class="docutils literal"><span class="pre">akka-remote-1.2.jar</span></tt> &#8211; Remote Actors</li>
+<li><tt class="docutils literal"><span class="pre">akka-stm-1.2.jar</span></tt> &#8211; STM (Software Transactional Memory), transactors and transactional datastructures</li>
+<li><tt class="docutils literal"><span class="pre">akka-http-1.2.jar</span></tt> &#8211; Akka Mist for continuation-based asynchronous HTTP and also Jersey integration</li>
+<li><tt class="docutils literal"><span class="pre">akka-slf4j-1.2.jar</span></tt> &#8211; SLF4J Event Handler Listener for logging with SLF4J</li>
+<li><tt class="docutils literal"><span class="pre">akka-testkit-1.2.jar</span></tt> &#8211; Toolkit for testing Actors</li>
 </ul>
 <p>We also have Akka Modules containing add-on modules outside the core of Akka. It contains Akka core as well. We will not be needing any modules there today, but for your information the module JARs are these:</p>
 <ul class="simple">
-<li><tt class="docutils literal"><span class="pre">akka-kernel-1.1.jar</span></tt> &#8211; Akka microkernel for running a bare-bones mini application server (embeds Jetty etc.)</li>
-<li><tt class="docutils literal"><span class="pre">akka-amqp-1.1.jar</span></tt> &#8211; AMQP integration</li>
-<li><tt class="docutils literal"><span class="pre">akka-camel-1.1.jar</span></tt> &#8211; Apache Camel Actors integration (it&#8217;s the best way to have your Akka application communicate with the rest of the world)</li>
-<li><tt class="docutils literal"><span class="pre">akka-camel-typed-1.1.jar</span></tt> &#8211; Apache Camel Typed Actors integration</li>
-<li><tt class="docutils literal"><span class="pre">akka-scalaz-1.1.jar</span></tt> &#8211; Support for the Scalaz library</li>
-<li><tt class="docutils literal"><span class="pre">akka-spring-1.1.jar</span></tt> &#8211; Spring framework integration</li>
-<li><tt class="docutils literal"><span class="pre">akka-osgi-dependencies-bundle-1.1.jar</span></tt> &#8211; OSGi support</li>
+<li><tt class="docutils literal"><span class="pre">akka-kernel-1.2.jar</span></tt> &#8211; Akka microkernel for running a bare-bones mini application server (embeds Jetty etc.)</li>
+<li><tt class="docutils literal"><span class="pre">akka-amqp-1.2.jar</span></tt> &#8211; AMQP integration</li>
+<li><tt class="docutils literal"><span class="pre">akka-camel-1.2.jar</span></tt> &#8211; Apache Camel Actors integration (it&#8217;s the best way to have your Akka application communicate with the rest of the world)</li>
+<li><tt class="docutils literal"><span class="pre">akka-camel-typed-1.2.jar</span></tt> &#8211; Apache Camel Typed Actors integration</li>
+<li><tt class="docutils literal"><span class="pre">akka-scalaz-1.2.jar</span></tt> &#8211; Support for the Scalaz library</li>
+<li><tt class="docutils literal"><span class="pre">akka-spring-1.2.jar</span></tt> &#8211; Spring framework integration</li>
+<li><tt class="docutils literal"><span class="pre">akka-osgi-dependencies-bundle-1.2.jar</span></tt> &#8211; OSGi support</li>
 </ul>
 </div>
 <div class="section" id="downloading-and-installing-the-scala-ide-for-eclipse">
@@ -131,7 +131,10 @@ $ echo $AKKA_HOME
 <p>If you want to use Eclipse for coding your Akka tutorial, you need to install the Scala plugin for Eclipse. The Eclipse plugin (and Eclipse itself) are not part of the Typesafe Stack. You will need <a class="reference external" href="http://www.eclipse.org/downloads/">Eclipse version 3.6.x (Helios)</a>.</p>
 <p>You can install this plugin using the regular update mechanism. First choose a version of the IDE from <a class="reference external" href="http://download.scala-ide.org">http://download.scala-ide.org</a>. We recommend you choose 2.0.x, which comes with Scala 2.9. Copy the corresponding URL and then choose <tt class="docutils literal"><span class="pre">Help/Install</span> <span class="pre">New</span> <span class="pre">Software</span></tt> and paste the URL you just copied. You should see  something similar to the following image.</p>
 <img alt="../_images/install-beta2-updatesite.png" src="../_images/install-beta2-updatesite.png" />
-<p>Make sure you select both the <tt class="docutils literal"><span class="pre">JDT</span> <span class="pre">Weaving</span> <span class="pre">for</span> <span class="pre">Scala</span></tt> and the <tt class="docutils literal"><span class="pre">Scala</span> <span class="pre">IDE</span> <span class="pre">for</span> <span class="pre">Eclipse</span></tt> plugins. The other plugin is optional, and contains the source code of the plugin itself.</p>
+<p>Select both the <tt class="docutils literal"><span class="pre">JDT</span> <span class="pre">Weaving</span> <span class="pre">for</span> <span class="pre">Scala</span></tt> and the <tt class="docutils literal"><span class="pre">Scala</span> <span class="pre">IDE</span> <span class="pre">for</span> <span class="pre">Eclipse</span></tt> plugins. The other plugin is optional, and contains the source code of the plugin itself.</p>
+<blockquote>
+<div>Note: If you have already installed the AspectJ plugin (for instance, by using the SpringSource Tools Suite), <em>do not install JDT Weaving for Scala</em>.
+The AspectJ plugin already installs a suitable version of this component.</div></blockquote>
 <p>Once the installation is finished, you need to restart Eclipse. The first time the plugin starts it will open a diagnostics window and offer to fix several settings, such as the delay for content assist (code-completion) or the shown completion proposal types.</p>
 <img alt="../_images/diagnostics-window.png" src="../_images/diagnostics-window.png" />
 <p>Accept the recommended settings, and follow the instructions if you need to increase the heap size of Eclipse.</p>
@@ -153,7 +156,7 @@ $ echo $AKKA_HOME
   <span class="k">lazy</span> <span class="k">val</span> <span class="n">eclipse</span> <span class="k">=</span> <span class="s">&quot;de.element34&quot;</span> <span class="o">%</span> <span class="s">&quot;sbt-eclipsify&quot;</span> <span class="o">%</span> <span class="s">&quot;0.7.0&quot;</span>
 
   <span class="k">val</span> <span class="n">akkaRepo</span>   <span class="k">=</span> <span class="s">&quot;Akka Repo&quot;</span> <span class="n">at</span> <span class="s">&quot;http://akka.io/repository&quot;</span>
-  <span class="k">val</span> <span class="n">akkaPlugin</span> <span class="k">=</span> <span class="s">&quot;se.scalablesolutions.akka&quot;</span> <span class="o">%</span> <span class="s">&quot;akka-sbt-plugin&quot;</span> <span class="o">%</span> <span class="s">&quot;1.1&quot;</span>
+  <span class="k">val</span> <span class="n">akkaPlugin</span> <span class="k">=</span> <span class="s">&quot;se.scalablesolutions.akka&quot;</span> <span class="o">%</span> <span class="s">&quot;akka-sbt-plugin&quot;</span> <span class="o">%</span> <span class="s">&quot;1.2&quot;</span>
 <span class="o">}</span>
 </pre></div>
 </div>
@@ -170,17 +173,17 @@ $ echo $AKKA_HOME
 </div>
 <p>Then run the <tt class="docutils literal"><span class="pre">eclipse</span></tt> target to generate the Eclipse project.</p>
 <div class="highlight-text"><div class="highlight"><pre>dragos@dragos-imac pi $ sbt eclipse
-[info] Building project AkkaPi 1.0 against Scala 2.9.0
-[info]    using MySbtProject with sbt 0.7.4 and Scala 2.7.7
+[info] Building project AkkaPi 1.0 against Scala 2.9.1
+[info]    using MySbtProject with sbt 0.7.7 and Scala 2.7.7
 [info]
 [info] == eclipse ==
 [info] Creating eclipse project...
 [info] == eclipse ==
 [success] Successful.
 [info]
-[info] Total time: 0 s, completed Apr 20, 2011 2:48:03 PM
+[info] Total time: 0 s, completed Sep 28, 2011 2:48:03 PM
 [info]
-[info] Total session time: 1 s, completed Apr 20, 2011 2:48:03 PM
+[info] Total session time: 1 s, completed Sep 28, 2011 2:48:03 PM
 [success] Build completed successfully.
 </pre></div>
 </div>
@@ -409,7 +412,7 @@ Calculation time:   858 millis
 
     <div class="footer">
         &copy; Copyright 2011, Typesafe Inc..
-      Last updated on Jun 04, 2011.
+      Last updated on Oct 03, 2011.
     </div>
   </body>
 </html>
