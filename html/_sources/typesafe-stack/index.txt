@@ -1,5 +1,5 @@
 Typesafe Stack
-============
+==============
 
 .. toctree::
    :maxdepth: 2

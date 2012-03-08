@@ -1,7 +1,7 @@
 .. _migration-manager-step-by-step-guide:
 
 Migration Manager: Step-by-step Guide
-============================================================
+=====================================
 
 Introduction
 ------------
@@ -45,7 +45,7 @@ You can test your installation by invoking ``java``.
     Java HotSpot(TM) 64-Bit Server VM (build 19.1-b02-334, mixed mode)
 
 Start MiMa
----------------
+----------
 
 Simply double click on the downloaded launcher and MiMa will start. If this is the first time you are running MiMa you will be asked to accept the End User License Agreement (EULA). Once accepted, it will remember it so that you will not be asked again.
 
@@ -70,6 +70,6 @@ Last, in the bottom-right corner it is reported the number of collected incompat
 You will see that entries are marked as "unfixable" or "upgradable". In the future MiMa will give you the ability to correct "upgradable" automatically by  rewriting the client's bytecode. On the other hand entries marked as "unfixable" require that the library maintainers corrects the library code before releasing.
 
 List of incompatibilities checked by MiMa 
-----------
+-----------------------------------------
 
 This section is coming soon.
