@@ -9,7 +9,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Getting Started Tutorial (Java): First Chapter &mdash; Typesafe Documentation</title>
+    <title>Getting Started With Akka (Java) &mdash; Typesafe Stack Documentation</title>
     
     <link rel="stylesheet" href="../_static/typesafe.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -28,10 +28,10 @@
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <script type="text/javascript" src="../_static/theme_extras.js"></script>
-    <link rel="top" title="Typesafe Documentation" href="../index.html" />
+    <link rel="top" title="Typesafe Stack Documentation" href="../index.html" />
     <link rel="up" title="Tutorials" href="index.html" />
-    <link rel="next" title="Migration Manager: Step-by-step Guide" href="migration-manager-step-by-step-guide.html" />
-    <link rel="prev" title="Getting Started Tutorial (Scala): First Chapter" href="getting-started-first-scala.html" /> 
+    <link rel="next" title="Getting Started With Play (Scala)" href="getting-started-with-play-scala.html" />
+    <link rel="prev" title="Getting Started With Akka (Scala)" href="getting-started-with-akka-scala.html" /> 
   </head>
   <body>
       <div class="header">
@@ -42,26 +42,26 @@
       <div class="topnav">
       
         <p>
-        «&#160;&#160;<a href="getting-started-first-scala.html">Getting Started Tutorial (Scala): First Chapter</a>
+        «&#160;&#160;<a href="getting-started-with-akka-scala.html">Getting Started With Akka (Scala)</a>
         &#160;&#160;::&#160;&#160;
         <a class="uplink" href="../index.html">Contents</a>
         &#160;&#160;::&#160;&#160;
-        <a href="migration-manager-step-by-step-guide.html">Migration Manager: Step-by-step Guide</a>&#160;&#160;»
+        <a href="getting-started-with-play-scala.html">Getting Started With Play (Scala)</a>&#160;&#160;»
         </p>
 
       </div>
       <div class="content">
         
         
-  <div class="section" id="getting-started-tutorial-java-first-chapter">
-<span id="getting-started-first-java"></span><h1>Getting Started Tutorial (Java): First Chapter<a class="headerlink" href="#getting-started-tutorial-java-first-chapter" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="getting-started-with-akka-java">
+<span id="id1"></span><h1>Getting Started With Akka (Java)<a class="headerlink" href="#getting-started-with-akka-java" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="introduction">
 <h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
 <p>Welcome to the first tutorial on how to get started with <a class="reference external" href="http://akka.io">Akka</a> and Java. We assume that you already know what Akka and Java are and will now focus on the steps necessary to start your first project.</p>
 <p>There are two variations of this first tutorial:</p>
 <ul class="simple">
 <li>creating a standalone project and run it from the command line</li>
-<li>creating a Maven project and running it from within Maven</li>
+<li>creating a <cite>Maven</cite> project and running it from within <cite>Maven</cite></li>
 </ul>
 <p>Since they are so similar we will present them both.</p>
 <p>The sample application that we will create is using actors to calculate the value of Pi. Calculating Pi is a CPU intensive operation and we will utilize Akka Actors to write a concurrent solution that scales out to multi-core processors. This sample will be extended in future tutorials to use Akka Remote Actors to scale out on multiple machines in a cluster.</p>
@@ -70,225 +70,51 @@
 <img alt="../_images/pi-formula.png" src="../_images/pi-formula.png" />
 <p>In this particular algorithm the master splits the series into chunks which are sent out to each worker actor to be processed. When each worker has processed its chunk it sends a result back to the master which aggregates the total result.</p>
 </div>
-<div class="section" id="tutorial-source-code">
-<h2>Tutorial source code<a class="headerlink" href="#tutorial-source-code" title="Permalink to this headline">¶</a></h2>
-<p>If you want don&#8217;t want to type in the code and/or set up a Maven project then you can check out the full tutorial from the Akka GitHub repository. It is in the <tt class="docutils literal"><span class="pre">akka-tutorials/akka-tutorial-first</span></tt> module. You can also browse it online <a class="reference external" href="https://github.com/akka/akka/tree/master/akka-tutorials/akka-tutorial-first">here</a>, with the actual source code <a class="reference external" href="https://github.com/akka/akka/blob/master/akka-tutorials/akka-tutorial-first/src/main/java/akka/tutorial/first/java/Pi.java">here</a>.</p>
-<p>To check out the code using Git invoke the following command and you can then you can navigate down to the tutorial.</p>
-<p>On Linux/Unix/Mac systems:</p>
-<div class="highlight-scala"><div class="highlight"><pre><span class="n">$</span> <span class="n">git</span> <span class="n">clone</span> <span class="n">git</span><span class="o">://</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">akka</span><span class="o">/</span><span class="n">akka</span><span class="o">.</span><span class="n">git</span>
-<span class="n">$</span> <span class="n">cd</span> <span class="n">akka</span><span class="o">/</span><span class="n">akka</span><span class="o">-</span><span class="n">tutorials</span><span class="o">/</span><span class="n">akka</span><span class="o">-</span><span class="n">tutorial</span><span class="o">-</span><span class="n">first</span>
-</pre></div>
-</div>
-<p>On Windows systems:</p>
-<div class="highlight-scala"><div class="highlight"><pre><span class="n">C</span><span class="o">:\</span><span class="nc">Users</span><span class="o">\</span><span class="n">jboner</span><span class="o">\</span><span class="n">src</span><span class="o">&gt;</span> <span class="n">git</span> <span class="n">clone</span> <span class="n">git</span><span class="o">://</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">akka</span><span class="o">/</span><span class="n">akka</span><span class="o">.</span><span class="n">git</span>
-<span class="n">C</span><span class="o">:\</span><span class="nc">Users</span><span class="o">\</span><span class="n">jboner</span><span class="o">\</span><span class="n">src</span><span class="o">&gt;</span> <span class="n">cd</span> <span class="n">akka</span><span class="o">\</span><span class="n">akka</span><span class="o">-</span><span class="n">tutorials</span><span class="o">\</span><span class="n">akka</span><span class="o">-</span><span class="n">tutorial</span><span class="o">-</span><span class="n">first</span>
-</pre></div>
-</div>
-</div>
-<div class="section" id="prerequisites">
-<h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this headline">¶</a></h2>
-<p>This tutorial assumes that you have Java 1.6 or later installed on you machine and <tt class="docutils literal"><span class="pre">java</span></tt> on your <tt class="docutils literal"><span class="pre">PATH</span></tt>. You also need to know how to run commands in a shell (ZSH, Bash, DOS etc.) and a decent text editor or IDE to type in the Java code.</p>
-<p>You need to make sure that <tt class="docutils literal"><span class="pre">$JAVA_HOME</span></tt> environment variable is set to the
-root of the Java distribution. You also need to make sure that the
-<tt class="docutils literal"><span class="pre">$JAVA_HOME/bin</span></tt> is on your <tt class="docutils literal"><span class="pre">PATH</span></tt>.</p>
-<p>On Linux/Unix/Mac systems:</p>
-<div class="highlight-scala"><div class="highlight"><pre><span class="n">$</span> <span class="n">export</span> <span class="nc">JAVA_HOME</span><span class="o">=..</span><span class="n">root</span> <span class="n">of</span> <span class="nc">Java</span> <span class="n">distribution</span><span class="o">..</span>
-<span class="n">$</span> <span class="n">export</span> <span class="nc">PATH</span><span class="o">=</span><span class="nc">$PATH</span><span class="k">:</span><span class="kt">$JAVA_HOME/bin</span>
-</pre></div>
-</div>
-<p>You can test your installation by invoking <tt class="docutils literal"><span class="pre">java</span></tt>:</p>
-<div class="highlight-scala"><div class="highlight"><pre><span class="n">$</span> <span class="n">java</span> <span class="o">-</span><span class="n">version</span>
-<span class="n">java</span> <span class="n">version</span> <span class="s">&quot;1.6.0_24&quot;</span>
-<span class="nc">Java</span><span class="o">(</span><span class="nc">TM</span><span class="o">)</span> <span class="nc">SE</span> <span class="nc">Runtime</span> <span class="nc">Environment</span> <span class="o">(</span><span class="n">build</span> <span class="mf">1.6</span><span class="o">.</span><span class="mi">0</span><span class="n">_24</span><span class="o">-</span><span class="n">b07</span><span class="o">-</span><span class="mi">334</span><span class="o">-</span><span class="mi">10</span><span class="n">M3326</span><span class="o">)</span>
-<span class="nc">Java</span> <span class="nc">HotSpot</span><span class="o">(</span><span class="nc">TM</span><span class="o">)</span> <span class="mi">64</span><span class="o">-</span><span class="nc">Bit</span> <span class="nc">Server</span> <span class="nc">VM</span> <span class="o">(</span><span class="n">build</span> <span class="mf">19.1</span><span class="o">-</span><span class="n">b02</span><span class="o">-</span><span class="mi">334</span><span class="o">,</span> <span class="n">mixed</span> <span class="n">mode</span><span class="o">)</span>
-</pre></div>
-</div>
-<p>On Windows systems:</p>
-<div class="highlight-scala"><div class="highlight"><pre><span class="n">C</span><span class="o">:\</span><span class="nc">Users</span><span class="o">\</span><span class="n">jboner</span><span class="o">\</span><span class="n">src</span><span class="o">\</span><span class="n">akka</span><span class="o">&gt;</span> <span class="n">set</span> <span class="nc">JAVA_HOME</span><span class="o">=..</span><span class="n">root</span> <span class="n">of</span> <span class="nc">Java</span> <span class="n">distribution</span><span class="o">..</span>
-<span class="n">C</span><span class="o">:\</span><span class="nc">Users</span><span class="o">\</span><span class="n">jboner</span><span class="o">\</span><span class="n">src</span><span class="o">\</span><span class="n">akka</span><span class="o">&gt;</span> <span class="n">set</span> <span class="nc">PATH</span><span class="o">=%</span><span class="nc">PATH</span><span class="o">%;%</span><span class="nc">JAVA_HOME</span><span class="o">%/</span><span class="n">bin</span>
-</pre></div>
-</div>
-<p>You can test your installation by invoking <tt class="docutils literal"><span class="pre">java</span></tt>:</p>
-<div class="highlight-scala"><div class="highlight"><pre><span class="n">C</span><span class="o">:\</span><span class="nc">Users</span><span class="o">\</span><span class="n">jboner</span><span class="o">\</span><span class="n">src</span><span class="o">\</span><span class="n">akka</span><span class="o">&gt;</span> <span class="n">java</span> <span class="o">-</span><span class="n">version</span>
-<span class="n">java</span> <span class="n">version</span> <span class="s">&quot;1.6.0_24&quot;</span>
-<span class="nc">Java</span><span class="o">(</span><span class="nc">TM</span><span class="o">)</span> <span class="nc">SE</span> <span class="nc">Runtime</span> <span class="nc">Environment</span> <span class="o">(</span><span class="n">build</span> <span class="mf">1.6</span><span class="o">.</span><span class="mi">0</span><span class="n">_24</span><span class="o">-</span><span class="n">b07</span><span class="o">-</span><span class="mi">334</span><span class="o">-</span><span class="mi">10</span><span class="n">M3326</span><span class="o">)</span>
-<span class="nc">Java</span> <span class="nc">HotSpot</span><span class="o">(</span><span class="nc">TM</span><span class="o">)</span> <span class="mi">64</span><span class="o">-</span><span class="nc">Bit</span> <span class="nc">Server</span> <span class="nc">VM</span> <span class="o">(</span><span class="n">build</span> <span class="mf">19.1</span><span class="o">-</span><span class="n">b02</span><span class="o">-</span><span class="mi">334</span><span class="o">,</span> <span class="n">mixed</span> <span class="n">mode</span><span class="o">)</span>
-</pre></div>
-</div>
-</div>
-<div class="section" id="downloading-and-installing-akka">
-<h2>Downloading and installing Akka<a class="headerlink" href="#downloading-and-installing-akka" title="Permalink to this headline">¶</a></h2>
-<p>To build and run the tutorial sample from the command line, you have to download
-Akka. If you prefer to use SBT to build and run the sample then you can skip this
-section and jump to the next one.</p>
-<p>Let&#8217;s get the <tt class="docutils literal"><span class="pre">akka-2.0.zip</span></tt> distribution of Akka from
-<a class="reference external" href="http://akka.io/downloads/">http://akka.io/downloads/</a> which includes everything we need for this
-tutorial. Once you have downloaded the distribution unzip it in the folder you
-would like to have Akka installed in. In my case I choose to install it in
-<tt class="docutils literal"><span class="pre">/Users/jboner/tools/</span></tt>, simply by unzipping it to this directory.</p>
-<p>You need to do one more thing in order to install Akka properly: set the
-<tt class="docutils literal"><span class="pre">AKKA_HOME</span></tt> environment variable to the root of the distribution. In my case
-I&#8217;m opening up a shell, navigating down to the distribution, and setting the
-<tt class="docutils literal"><span class="pre">AKKA_HOME</span></tt> variable.</p>
-<p>On Linux/Unix/Mac systems:</p>
-<div class="highlight-scala"><div class="highlight"><pre><span class="n">$</span> <span class="n">cd</span> <span class="o">/</span><span class="nc">Users</span><span class="o">/</span><span class="n">jboner</span><span class="o">/</span><span class="n">tools</span><span class="o">/</span><span class="n">akka</span><span class="o">-</span><span class="mf">2.0</span>
-<span class="n">$</span> <span class="n">export</span> <span class="nc">AKKA_HOME</span><span class="o">=</span><span class="n">`pwd`</span>
-<span class="n">$</span> <span class="n">echo</span> <span class="nc">$AKKA_HOME</span>
-<span class="o">/</span><span class="nc">Users</span><span class="o">/</span><span class="n">jboner</span><span class="o">/</span><span class="n">tools</span><span class="o">/</span><span class="n">akka</span><span class="o">-</span><span class="mf">2.0</span>
-</pre></div>
-</div>
-<p>On Windows systems:</p>
-<div class="highlight-scala"><div class="highlight"><pre><span class="n">C</span><span class="o">:\</span><span class="nc">Users</span><span class="o">\</span><span class="n">jboner</span><span class="o">\</span><span class="n">src</span><span class="o">\</span><span class="n">akka</span><span class="o">&gt;</span> <span class="n">cd</span> <span class="n">akka</span><span class="o">-</span><span class="mf">2.0</span>
-<span class="n">C</span><span class="o">:\</span><span class="nc">Users</span><span class="o">\</span><span class="n">jboner</span><span class="o">\</span><span class="n">src</span><span class="o">\</span><span class="n">akka</span><span class="o">\</span><span class="n">akka</span><span class="o">-</span><span class="mf">2.0</span><span class="o">&gt;</span> <span class="n">set</span> <span class="nc">AKKA_HOME</span><span class="o">=%</span><span class="n">cd</span><span class="o">%</span>
-<span class="n">C</span><span class="o">:\</span><span class="nc">Users</span><span class="o">\</span><span class="n">jboner</span><span class="o">\</span><span class="n">src</span><span class="o">\</span><span class="n">akka</span><span class="o">\</span><span class="n">akka</span><span class="o">-</span><span class="mf">2.0</span><span class="o">&gt;</span> <span class="n">echo</span> <span class="o">%</span><span class="nc">AKKA_HOME</span><span class="o">%</span>
-<span class="n">C</span><span class="o">:\</span><span class="nc">Users</span><span class="o">\</span><span class="n">jboner</span><span class="o">\</span><span class="n">src</span><span class="o">\</span><span class="n">akka</span><span class="o">\</span><span class="n">akka</span><span class="o">-</span><span class="mf">2.0</span>
-</pre></div>
-</div>
-<p>The distribution looks like this.</p>
-<p>On Linux/Unix/Mac systems:</p>
-<div class="highlight-scala"><div class="highlight"><pre><span class="n">$</span> <span class="n">ls</span> <span class="o">-</span><span class="mi">1</span>
-<span class="n">bin</span>
-<span class="n">config</span>
-<span class="n">deploy</span>
-<span class="n">doc</span>
-<span class="n">lib</span>
-<span class="n">src</span>
-</pre></div>
-</div>
-<p>On Windows systems:</p>
-<div class="highlight-scala"><div class="highlight"><pre><span class="n">C</span><span class="o">:\</span><span class="nc">Users</span><span class="o">\</span><span class="n">jboner</span><span class="o">\</span><span class="n">src</span><span class="o">\</span><span class="n">akka</span><span class="o">\</span><span class="n">akka</span><span class="o">-</span><span class="mf">2.0</span><span class="o">&gt;</span> <span class="n">dir</span>
-<span class="n">bin</span>
-<span class="n">config</span>
-<span class="n">deploy</span>
-<span class="n">doc</span>
-<span class="n">lib</span>
-<span class="n">src</span>
-</pre></div>
-</div>
-<ul class="simple">
-<li>In the <tt class="docutils literal"><span class="pre">bin</span></tt> directory we have scripts for starting the Akka Microkernel.</li>
-<li>In the <tt class="docutils literal"><span class="pre">config</span></tt> directory we have the Akka conf files.</li>
-<li>In the <tt class="docutils literal"><span class="pre">deploy</span></tt> directory we can place applications to be run with the microkernel.</li>
-<li>In the <tt class="docutils literal"><span class="pre">doc</span></tt> directory we have the documentation, API, and doc JARs.</li>
-<li>In the <tt class="docutils literal"><span class="pre">lib</span></tt> directory we have the Scala and Akka JARs.</li>
-<li>In the <tt class="docutils literal"><span class="pre">src</span></tt> directory we have the source JARs for Akka.</li>
-</ul>
-<p>The only JAR we will need for this tutorial (apart from the
-<tt class="docutils literal"><span class="pre">scala-library.jar</span></tt> JAR) is the <tt class="docutils literal"><span class="pre">akka-actor-2.0.jar</span></tt> JAR in the <tt class="docutils literal"><span class="pre">lib/akka</span></tt>
-directory. This is a self-contained JAR with zero dependencies and contains
-everything we need to write a system using Actors.</p>
-<p>Akka is very modular and has many JARs for containing different features. The
-modules are:</p>
-<ul class="simple">
-<li><tt class="docutils literal"><span class="pre">akka-actor</span></tt> &#8211; Actors</li>
-<li><tt class="docutils literal"><span class="pre">akka-remote</span></tt> &#8211; Remote Actors</li>
-<li><tt class="docutils literal"><span class="pre">akka-slf4j</span></tt> &#8211; SLF4J Event Handler Listener for logging with SLF4J</li>
-<li><tt class="docutils literal"><span class="pre">akka-testkit</span></tt> &#8211; Toolkit for testing Actors</li>
-<li><tt class="docutils literal"><span class="pre">akka-kernel</span></tt> &#8211; Akka microkernel for running a bare-bones mini application server</li>
-<li><tt class="docutils literal"><span class="pre">akka-durable-mailboxes</span></tt> &#8211; Durable mailboxes: file-based, MongoDB, Redis, Beanstalk and Zookeeper</li>
-</ul>
-</div>
 <div class="section" id="downloading-and-installing-maven">
 <h2>Downloading and installing Maven<a class="headerlink" href="#downloading-and-installing-maven" title="Permalink to this headline">¶</a></h2>
-<p>Maven is an excellent build system that can be used to build both Java and Scala projects. If you want to use Maven for this tutorial then follow the following instructions, if not you can skip this section and the next.</p>
-<p>First browse to <a class="reference external" href="http://maven.apache.org/download.html">http://maven.apache.org/download.html</a> and download the <tt class="docutils literal"><span class="pre">3.0.3</span></tt> distribution.</p>
+<p>This tutorial relies on <cite>Maven</cite> as the build system, so let&#8217;s start by downloading and installing <cite>Maven</cite>.</p>
+<p>First browse to <a class="reference external" href="http://maven.apache.org/download.html">http://maven.apache.org/download.html</a> and download the <tt class="docutils literal"><span class="pre">3.0.4</span></tt> distribution.</p>
 <p>To install Maven it is easiest to follow the instructions on <a class="reference external" href="http://maven.apache.org/download.html#Installation">http://maven.apache.org/download.html#Installation</a>.</p>
 </div>
-<div class="section" id="creating-an-akka-maven-project">
-<h2>Creating an Akka Maven project<a class="headerlink" href="#creating-an-akka-maven-project" title="Permalink to this headline">¶</a></h2>
-<p>If you have not already done so, now is the time to create a Maven project for our tutorial. You do that by stepping into the directory you want to create your project in and invoking the <tt class="docutils literal"><span class="pre">mvn</span></tt> command.</p>
-<p>On Linux/Unix/Mac systems:</p>
-<div class="highlight-scala"><div class="highlight"><pre><span class="n">$</span> <span class="n">mvn</span> <span class="n">archetype</span><span class="k">:</span><span class="kt">generate</span> <span class="kt">\</span>
-    <span class="o">-</span><span class="nc">DgroupId</span><span class="o">=</span><span class="n">akka</span><span class="o">.</span><span class="n">tutorial</span><span class="o">.</span><span class="n">first</span><span class="o">.</span><span class="n">java</span> <span class="o">\</span>
-    <span class="o">-</span><span class="nc">DartifactId</span><span class="o">=</span><span class="n">akka</span><span class="o">-</span><span class="n">tutorial</span><span class="o">-</span><span class="n">first</span><span class="o">-</span><span class="n">java</span> <span class="o">\</span>
-    <span class="o">-</span><span class="nc">DarchetypeArtifactId</span><span class="o">=</span><span class="n">maven</span><span class="o">-</span><span class="n">archetype</span><span class="o">-</span><span class="n">quickstart</span> <span class="o">\</span>
-    <span class="o">-</span><span class="nc">DinteractiveMode</span><span class="o">=</span><span class="kc">false</span>
-</pre></div>
-</div>
-<p>On Windows systems:</p>
-<div class="highlight-scala"><div class="highlight"><pre><span class="n">C</span><span class="o">:\</span><span class="nc">Users</span><span class="o">\</span><span class="n">jboner</span><span class="o">\</span><span class="n">src</span><span class="o">\</span><span class="n">akka</span><span class="o">\</span><span class="n">akka</span><span class="o">-</span><span class="mf">2.0</span><span class="o">&gt;</span> <span class="n">mvn</span> <span class="n">archetype</span><span class="k">:</span><span class="kt">generate</span> <span class="kt">\</span>
-    <span class="o">-</span><span class="nc">DgroupId</span><span class="o">=</span><span class="n">akka</span><span class="o">.</span><span class="n">tutorial</span><span class="o">.</span><span class="n">first</span><span class="o">.</span><span class="n">java</span> <span class="o">\</span>
-    <span class="o">-</span><span class="nc">DartifactId</span><span class="o">=</span><span class="n">akka</span><span class="o">-</span><span class="n">tutorial</span><span class="o">-</span><span class="n">first</span><span class="o">-</span><span class="n">java</span> <span class="o">\</span>
-    <span class="o">-</span><span class="nc">DarchetypeArtifactId</span><span class="o">=</span><span class="n">maven</span><span class="o">-</span><span class="n">archetype</span><span class="o">-</span><span class="n">quickstart</span> <span class="o">\</span>
-    <span class="o">-</span><span class="nc">DinteractiveMode</span><span class="o">=</span><span class="kc">false</span>
-</pre></div>
-</div>
-<p>Now we have the basis for our Maven-based Akka project. Let&#8217;s step into the project directory:</p>
-<p>On Linux/Unix/Mac systems:</p>
-<div class="highlight-scala"><div class="highlight"><pre><span class="n">$</span> <span class="n">cd</span> <span class="n">akka</span><span class="o">-</span><span class="n">tutorial</span><span class="o">-</span><span class="n">first</span><span class="o">-</span><span class="n">java</span>
-</pre></div>
-</div>
-<p>On Windows systems:</p>
-<div class="highlight-scala"><div class="highlight"><pre><span class="n">C</span><span class="o">:\</span><span class="nc">Users</span><span class="o">\</span><span class="n">jboner</span><span class="o">\</span><span class="n">src</span><span class="o">\</span><span class="n">akka</span><span class="o">\</span><span class="n">akka</span><span class="o">-</span><span class="mf">2.0</span><span class="o">&gt;</span> <span class="n">cd</span> <span class="n">akka</span><span class="o">-</span><span class="n">tutorial</span><span class="o">-</span><span class="n">first</span><span class="o">-</span><span class="n">java</span>
-</pre></div>
-</div>
-<p>Here is the layout that Maven created:</p>
-<div class="highlight-scala"><pre>akka-tutorial-first-jboner
-|-- pom.xml
-`-- src
-    |-- main
-    |   `-- java
-    |       `-- akka
-    |           `-- tutorial
-    |               `-- first
-    |                   `-- java
-    |                       `-- App.java</pre>
-</div>
-<p>As you can see we already have a Java source file called <tt class="docutils literal"><span class="pre">App.java</span></tt>, let&#8217;s now rename it to <tt class="docutils literal"><span class="pre">Pi.java</span></tt>.</p>
-<p>We also need to edit the <tt class="docutils literal"><span class="pre">pom.xml</span></tt> build file. Let&#8217;s add the dependency we
-need as well as the Maven repository it should download it from. The Akka Maven
-repository can be found at <a class="reference external" href="http://akka.io/releases/">http://akka.io/releases/</a> and Typesafe provides
-<a class="reference external" href="http://repo.typesafe.com/typesafe/releases/">http://repo.typesafe.com/typesafe/releases/</a> that proxies several other
-repositories, including akka.io.  It should now look something like this:</p>
-<div class="highlight-xml"><div class="highlight"><pre><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
-<span class="nt">&lt;project</span> <span class="na">xmlns=</span><span class="s">&quot;http://maven.apache.org/POM/4.0.0&quot;</span>
-         <span class="na">xmlns:xsi=</span><span class="s">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span>
-         <span class="na">xsi:schemaLocation=</span><span class="s">&quot;http://maven.apache.org/POM/4.0.0</span>
-<span class="s">         http://maven.apache.org/xsd/maven-4.0.0.xsd&quot;</span><span class="nt">&gt;</span>
-    <span class="nt">&lt;modelVersion&gt;</span>4.0.0<span class="nt">&lt;/modelVersion&gt;</span>
+<div class="section" id="create-the-project">
+<h2>Create the project<a class="headerlink" href="#create-the-project" title="Permalink to this headline">¶</a></h2>
+<p>The simplest way to get started is to install the Typesafe <tt class="docutils literal"><span class="pre">akka-java-maven</span></tt>
+project template. This will install a basic Akka project that we can use as a
+start.</p>
+<p>Before we can do that we need to install <cite>giter8</cite> (<tt class="docutils literal"><span class="pre">g8</span></tt>). In case you have
+not done that yet you can find the instructions in the Typesafe Stack installation
+guide: <a class="reference internal" href="../typesafe-stack/downloading-installing.html#downloading-installing"><em>Installing the Typesafe Stack</em></a>.</p>
+<p>Let&#8217;s create the Akka starter project from the <cite>giter8</cite> template:</p>
+<div class="highlight-scala"><pre>g8 typesafehub/akka-java-maven
 
-    <span class="nt">&lt;name&gt;</span>akka-tutorial-first-java<span class="nt">&lt;/name&gt;</span>
-    <span class="nt">&lt;groupId&gt;</span>akka.tutorial.first.java<span class="nt">&lt;/groupId&gt;</span>
-    <span class="nt">&lt;artifactId&gt;</span>akka-tutorial-first-java<span class="nt">&lt;/artifactId&gt;</span>
-    <span class="nt">&lt;packaging&gt;</span>jar<span class="nt">&lt;/packaging&gt;</span>
-    <span class="nt">&lt;version&gt;</span>1.0-SNAPSHOT<span class="nt">&lt;/version&gt;</span>
-    <span class="nt">&lt;url&gt;</span>http://akka.io<span class="nt">&lt;/url&gt;</span>
+Akka 2.0 Project Using Java and Maven
 
-    <span class="nt">&lt;dependencies&gt;</span>
-        <span class="nt">&lt;dependency&gt;</span>
-            <span class="nt">&lt;groupId&gt;</span>com.typesafe.akka<span class="nt">&lt;/groupId&gt;</span>
-            <span class="nt">&lt;artifactId&gt;</span>akka-actor<span class="nt">&lt;/artifactId&gt;</span>
-            <span class="nt">&lt;version&gt;</span>2.0<span class="nt">&lt;/version&gt;</span>
-        <span class="nt">&lt;/dependency&gt;</span>
-    <span class="nt">&lt;/dependencies&gt;</span>
+package [org.example]: akka.tutorial.first.java
+group_id [org.example]: akka.tutorial
+name [Akka Project In Java]:
+akka_version [2.0]:
+version [0.1-SNAPSHOT]:
+artifact_id [my-project]: akka-tutorial-java
 
-    <span class="nt">&lt;repositories&gt;</span>
-        <span class="nt">&lt;repository&gt;</span>
-            <span class="nt">&lt;id&gt;</span>typesafe<span class="nt">&lt;/id&gt;</span>
-            <span class="nt">&lt;name&gt;</span>Typesafe Repository<span class="nt">&lt;/name&gt;</span>
-            <span class="nt">&lt;url&gt;</span>http://repo.typesafe.com/typesafe/releases/<span class="nt">&lt;/url&gt;</span>
-        <span class="nt">&lt;/repository&gt;</span>
-    <span class="nt">&lt;/repositories&gt;</span>
-
-    <span class="nt">&lt;build&gt;</span>
-        <span class="nt">&lt;plugins&gt;</span>
-            <span class="nt">&lt;plugin&gt;</span>
-                <span class="nt">&lt;groupId&gt;</span>org.apache.maven.plugins<span class="nt">&lt;/groupId&gt;</span>
-                <span class="nt">&lt;artifactId&gt;</span>maven-compiler-plugin<span class="nt">&lt;/artifactId&gt;</span>
-                <span class="nt">&lt;version&gt;</span>2.3.2<span class="nt">&lt;/version&gt;</span>
-                <span class="nt">&lt;configuration&gt;</span>
-                    <span class="nt">&lt;source&gt;</span>1.6<span class="nt">&lt;/source&gt;</span>
-                    <span class="nt">&lt;target&gt;</span>1.6<span class="nt">&lt;/target&gt;</span>
-                <span class="nt">&lt;/configuration&gt;</span>
-            <span class="nt">&lt;/plugin&gt;</span>
-        <span class="nt">&lt;/plugins&gt;</span>
-    <span class="nt">&lt;/build&gt;</span>
-<span class="nt">&lt;/project&gt;</span>
+Applied typesafehub/akka-java-maven.g8 in akka-project-in-java</pre>
+</div>
+<p>Now we have a simple Akka Maven project to start hacking in:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="n">cd</span> <span class="n">akka</span><span class="o">-</span><span class="n">project</span><span class="o">-</span><span class="n">in</span><span class="o">-</span><span class="n">java</span>
+<span class="n">ls</span>
+<span class="nc">README</span> <span class="n">pom</span><span class="o">.</span><span class="n">xml</span> <span class="n">src</span>
 </pre></div>
 </div>
+</div>
+<div class="section" id="tutorial-source-code">
+<h2>Tutorial source code<a class="headerlink" href="#tutorial-source-code" title="Permalink to this headline">¶</a></h2>
+<p>If you want don&#8217;t want to type in the code and/or set up an <cite>Maven</cite> project
+from scratch then you can check out the full tutorial from the Typesafe
+<cite>giter8</cite> template repository:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="n">g8</span> <span class="n">typesafehub</span><span class="o">/</span><span class="n">akka</span><span class="o">-</span><span class="n">first</span><span class="o">-</span><span class="n">tutorial</span><span class="o">-</span><span class="n">java</span>
+</pre></div>
 </div>
 <div class="section" id="start-writing-the-code">
-<h2>Start writing the code<a class="headerlink" href="#start-writing-the-code" title="Permalink to this headline">¶</a></h2>
+<h3>Start writing the code<a class="headerlink" href="#start-writing-the-code" title="Permalink to this headline">¶</a></h3>
 <p>Now it&#8217;s about time to start hacking.</p>
 <p>We start by creating a <tt class="docutils literal"><span class="pre">Pi.java</span></tt> file and adding these import statements at the top of the file:</p>
 <div class="highlight-scala"><div class="highlight"><pre><span class="k">import</span> <span class="nn">akka.actor.ActorRef</span><span class="o">;</span>
@@ -305,9 +131,13 @@ repositories, including akka.io.  It should now look something like this:</p>
 <p>If you are using the command line tools then create the file wherever you want.
 We will create it in a directory called <tt class="docutils literal"><span class="pre">tutorial</span></tt> at the root of the Akka distribution,
 e.g. in <tt class="docutils literal"><span class="pre">$AKKA_HOME/tutorial/akka/tutorial/first/java/Pi.java</span></tt>.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">You can find Akka&#8217;s documentation online <a class="reference external" href="http://doc.akka.io/docs/akka/2.0/">here</a>.</p>
+</div>
 </div>
 <div class="section" id="creating-the-messages">
-<h2>Creating the messages<a class="headerlink" href="#creating-the-messages" title="Permalink to this headline">¶</a></h2>
+<h3>Creating the messages<a class="headerlink" href="#creating-the-messages" title="Permalink to this headline">¶</a></h3>
 <p>The design we are aiming for is to have one <tt class="docutils literal"><span class="pre">Master</span></tt> actor initiating the
 computation, creating a set of <tt class="docutils literal"><span class="pre">Worker</span></tt> actors. Then it splits up the work
 into discrete chunks, and sends these chunks to the different workers in a
@@ -381,7 +211,7 @@ the calculation took</li>
 </div>
 </div>
 <div class="section" id="creating-the-worker">
-<h2>Creating the worker<a class="headerlink" href="#creating-the-worker" title="Permalink to this headline">¶</a></h2>
+<h3>Creating the worker<a class="headerlink" href="#creating-the-worker" title="Permalink to this headline">¶</a></h3>
 <p>Now we can create the worker actor.  This is done by extending in the <tt class="docutils literal"><span class="pre">UntypedActor</span></tt> base class and defining the <tt class="docutils literal"><span class="pre">onReceive</span></tt> method. The <tt class="docutils literal"><span class="pre">onReceive</span></tt> method defines our message handler. We expect it to be able to handle the <tt class="docutils literal"><span class="pre">Work</span></tt> message so we need to add a handler for this message:</p>
 <div class="highlight-scala"><div class="highlight"><pre><span class="n">public</span> <span class="n">static</span> <span class="k">class</span> <span class="nc">Worker</span> <span class="k">extends</span> <span class="nc">UntypedActor</span> <span class="o">{</span>
 
@@ -412,7 +242,7 @@ the calculation took</li>
 </div>
 </div>
 <div class="section" id="creating-the-master">
-<h2>Creating the master<a class="headerlink" href="#creating-the-master" title="Permalink to this headline">¶</a></h2>
+<h3>Creating the master<a class="headerlink" href="#creating-the-master" title="Permalink to this headline">¶</a></h3>
 <p>The master actor is a little bit more involved. In its constructor we create a round-robin router
 to make it easier to spread out the work evenly between the workers. Let&#8217;s do that first:</p>
 <div class="highlight-scala"><div class="highlight"><pre><span class="n">workerRouter</span> <span class="k">=</span> <span class="k">this</span><span class="o">.</span><span class="n">getContext</span><span class="o">().</span><span class="n">actorOf</span><span class="o">(</span><span class="k">new</span> <span class="nc">Props</span><span class="o">(</span><span class="nc">Worker</span><span class="o">.</span><span class="n">class</span><span class="o">).</span><span class="n">withRouter</span><span class="o">(</span>
@@ -502,7 +332,7 @@ will propagate down to all its supervised &#8216;children&#8217;.</p>
 </div>
 </div>
 <div class="section" id="creating-the-result-listener">
-<h2>Creating the result listener<a class="headerlink" href="#creating-the-result-listener" title="Permalink to this headline">¶</a></h2>
+<h3>Creating the result listener<a class="headerlink" href="#creating-the-result-listener" title="Permalink to this headline">¶</a></h3>
 <p>The listener is straightforward. When it receives the <tt class="docutils literal"><span class="pre">PiApproximation</span></tt> from the <tt class="docutils literal"><span class="pre">Master</span></tt> it
 prints the result and shuts down the <tt class="docutils literal"><span class="pre">ActorSystem</span></tt>.</p>
 <div class="highlight-scala"><div class="highlight"><pre><span class="n">public</span> <span class="n">static</span> <span class="k">class</span> <span class="nc">Listener</span> <span class="k">extends</span> <span class="nc">UntypedActor</span> <span class="o">{</span>
@@ -522,7 +352,7 @@ prints the result and shuts down the <tt class="docutils literal"><span class="p
 </div>
 </div>
 <div class="section" id="bootstrap-the-calculation">
-<h2>Bootstrap the calculation<a class="headerlink" href="#bootstrap-the-calculation" title="Permalink to this headline">¶</a></h2>
+<h3>Bootstrap the calculation<a class="headerlink" href="#bootstrap-the-calculation" title="Permalink to this headline">¶</a></h3>
 <p>Now the only thing that is left to implement is the runner that should bootstrap and run the calculation for us.
 We do that by adding a <tt class="docutils literal"><span class="pre">main</span></tt> method to the enclosing <tt class="docutils literal"><span class="pre">Pi</span></tt> class in which we create a new instance of <tt class="docutils literal"><span class="pre">Pi</span></tt> and
 invoke method <tt class="docutils literal"><span class="pre">calculate</span></tt> in which we start up the <tt class="docutils literal"><span class="pre">Master</span></tt> actor and wait for it to finish:</p>
@@ -757,7 +587,7 @@ If you instead where in an actor context, i.e. inside an actor creating other ac
 </div>
 </div>
 <div class="section" id="run-it-as-a-command-line-application">
-<h2>Run it as a command line application<a class="headerlink" href="#run-it-as-a-command-line-application" title="Permalink to this headline">¶</a></h2>
+<h3>Run it as a command line application<a class="headerlink" href="#run-it-as-a-command-line-application" title="Permalink to this headline">¶</a></h3>
 <p>If you have not typed in (or copied) the code for the tutorial as
 <tt class="docutils literal"><span class="pre">$AKKA_HOME/tutorial/akka/tutorial/first/java/Pi.java</span></tt> then now is the
 time. When that&#8217;s done open up a shell and step in to the Akka distribution
@@ -771,7 +601,7 @@ when we compile the source.</p>
     tutorial/akka/tutorial/first/java/Pi.java</pre>
 </div>
 <p>On Windows systems:</p>
-<div class="highlight-scala"><div class="highlight"><pre><span class="n">C</span><span class="o">:\</span><span class="nc">Users</span><span class="o">\</span><span class="n">jboner</span><span class="o">\</span><span class="n">src</span><span class="o">\</span><span class="n">akka</span><span class="o">\</span><span class="n">akka</span><span class="o">-</span><span class="mf">2.0</span><span class="o">&gt;</span> <span class="n">javac</span> <span class="o">-</span><span class="n">cp</span> <span class="o">\</span>
+<div class="highlight-scala"><div class="highlight"><pre><span class="n">C</span><span class="o">:\</span><span class="nc">Users</span><span class="o">\</span><span class="n">jboner</span><span class="o">\</span><span class="n">src</span><span class="o">\</span><span class="n">akka</span><span class="o">\</span><span class="n">akka</span><span class="o">-</span><span class="n">project</span><span class="o">-</span><span class="n">in</span><span class="o">-</span><span class="n">java</span><span class="o">&gt;</span> <span class="n">javac</span> <span class="o">-</span><span class="n">cp</span> <span class="o">\</span>
    <span class="n">lib</span><span class="o">/</span><span class="n">scala</span><span class="o">-</span><span class="n">library</span><span class="o">.</span><span class="n">jar</span><span class="o">;</span><span class="n">lib</span><span class="o">/</span><span class="n">akka</span><span class="o">/</span><span class="n">akka</span><span class="o">-</span><span class="n">actor</span><span class="o">-</span><span class="mf">2.0</span><span class="o">.</span><span class="n">jar</span> <span class="o">\</span>
    <span class="n">tutorial</span><span class="o">/</span><span class="n">akka</span><span class="o">/</span><span class="n">tutorial</span><span class="o">/</span><span class="n">first</span><span class="o">/</span><span class="n">java</span><span class="o">/</span><span class="nc">Pi</span><span class="o">.</span><span class="n">java</span>
 </pre></div>
@@ -785,58 +615,58 @@ we compiled ourselves.</p>
     -cp lib/scala-library.jar:lib/akka/akka-actor-2.0.jar:. \
     akka.tutorial.first.scala.Pi
 
-Pi approximation:   3.1435501812459323
+Pi approximation:   3.1415926435897883
 Calculation time:   359 millis</pre>
 </div>
 <p>On Windows systems:</p>
-<div class="highlight-scala"><pre>C:\Users\jboner\src\akka\akka-2.0&gt; java \
+<div class="highlight-scala"><pre>C:\Users\jboner\src\akka\akka-project-in-java&gt; java \
     -cp lib/scala-library.jar;lib\akka\akka-actor-2.0.jar;. \
     akka.tutorial.first.scala.Pi
 
-Pi approximation:   3.1435501812459323
+Pi approximation:   3.1415926435897883
 Calculation time:   359 millis</pre>
 </div>
 <p>Yippee! It is working.</p>
 </div>
 <div class="section" id="run-it-inside-maven">
-<h2>Run it inside Maven<a class="headerlink" href="#run-it-inside-maven" title="Permalink to this headline">¶</a></h2>
+<h3>Run it inside Maven<a class="headerlink" href="#run-it-inside-maven" title="Permalink to this headline">¶</a></h3>
 <p>If you used Maven, then you can run the application directly inside Maven. First you need to compile the project.</p>
 <p>On Linux/Unix/Mac systems:</p>
 <div class="highlight-scala"><div class="highlight"><pre><span class="n">$</span> <span class="n">mvn</span> <span class="n">compile</span>
 </pre></div>
 </div>
 <p>On Windows systems:</p>
-<div class="highlight-scala"><div class="highlight"><pre><span class="n">C</span><span class="o">:\</span><span class="nc">Users</span><span class="o">\</span><span class="n">jboner</span><span class="o">\</span><span class="n">src</span><span class="o">\</span><span class="n">akka</span><span class="o">\</span><span class="n">akka</span><span class="o">-</span><span class="mf">2.0</span><span class="o">&gt;</span> <span class="n">mvn</span> <span class="n">compile</span>
+<div class="highlight-scala"><div class="highlight"><pre><span class="n">C</span><span class="o">:\</span><span class="nc">Users</span><span class="o">\</span><span class="n">jboner</span><span class="o">\</span><span class="n">src</span><span class="o">\</span><span class="n">akka</span><span class="o">\</span><span class="n">akka</span><span class="o">-</span><span class="n">project</span><span class="o">-</span><span class="n">in</span><span class="o">-</span><span class="n">java</span><span class="o">&gt;</span> <span class="n">mvn</span> <span class="n">compile</span>
 </pre></div>
 </div>
 <p>When this in done we can run our application directly inside Maven:</p>
 <p>On Linux/Unix/Mac systems:</p>
 <div class="highlight-scala"><pre>$ mvn exec:java -Dexec.mainClass="akka.tutorial.first.java.Pi"
 ...
-Pi approximation:   3.1435501812459323
+Pi approximation:   3.1415926435897883
 Calculation time:   359 millis</pre>
 </div>
 <p>On Windows systems:</p>
-<div class="highlight-scala"><pre>C:\Users\jboner\src\akka\akka-2.0&gt; mvn exec:java \
+<div class="highlight-scala"><pre>C:\Users\jboner\src\akka\akka-project-in-java&gt; mvn exec:java \
     -Dexec.mainClass="akka.tutorial.first.java.Pi"
 ...
-Pi approximation:   3.1435501812459323
+Pi approximation:   3.1415926435897883
 Calculation time:   359 millis</pre>
 </div>
 <p>Yippee! It is working.</p>
 </div>
 <div class="section" id="overriding-configuration-externally-optional">
-<h2>Overriding Configuration Externally (Optional)<a class="headerlink" href="#overriding-configuration-externally-optional" title="Permalink to this headline">¶</a></h2>
+<h3>Overriding Configuration Externally (Optional)<a class="headerlink" href="#overriding-configuration-externally-optional" title="Permalink to this headline">¶</a></h3>
 <p>The sample project includes an <tt class="docutils literal"><span class="pre">application.conf</span></tt> file in the resources directory:</p>
-<div class="highlight-scala"><pre>akka.actor.deployment {
-  /master/workerRouter {
-    # Uncomment the following two lines to change the calculation to 
-    # use 10 workers instead of 4:
-    #router = round-robin
-    #nr-of-instances = 10
-  }
-}
-</pre>
+<div class="highlight-scala"><div class="highlight"><pre><span class="n">akka</span><span class="o">.</span><span class="n">actor</span><span class="o">.</span><span class="n">deployment</span> <span class="o">{</span>
+  <span class="o">/</span><span class="n">master</span><span class="o">/</span><span class="n">workerRouter</span> <span class="o">{</span>
+    <span class="k">#</span> <span class="nc">Uncomment</span> <span class="n">the</span> <span class="n">following</span> <span class="n">two</span> <span class="n">lines</span> <span class="n">to</span> <span class="n">change</span> <span class="n">the</span> <span class="n">calculation</span> <span class="n">to</span> 
+    <span class="k">#</span> <span class="n">use</span> <span class="mi">10</span> <span class="n">workers</span> <span class="n">instead</span> <span class="n">of</span> <span class="mi">4</span><span class="k">:</span>
+    <span class="k">#</span><span class="kt">router</span> <span class="o">=</span> <span class="n">round</span><span class="o">-</span><span class="n">robin</span>
+    <span class="k">#</span><span class="n">nr</span><span class="o">-</span><span class="n">of</span><span class="o">-</span><span class="n">instances</span> <span class="k">=</span> <span class="mi">10</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</pre></div>
 </div>
 <p>If you uncomment the two lines, you should see a change in performance,
 hopefully for the better (you might want to increase the number of messages in
@@ -852,10 +682,11 @@ JVM’s <tt class="docutils literal"><span class="pre">-classpath</span></tt> op
 </div>
 </div>
 <div class="section" id="conclusion">
-<h2>Conclusion<a class="headerlink" href="#conclusion" title="Permalink to this headline">¶</a></h2>
+<h3>Conclusion<a class="headerlink" href="#conclusion" title="Permalink to this headline">¶</a></h3>
 <p>We have learned how to create our first Akka project using Akka&#8217;s actors to speed up a computation-intensive problem by scaling out on multi-core processors (also known as scaling up). We have also learned to compile and run an Akka project using either the tools on the command line or the SBT build system.</p>
 <p>If you have a multi-core machine then I encourage you to try out different number of workers (number of working actors) by tweaking the <tt class="docutils literal"><span class="pre">nrOfWorkers</span></tt> variable to for example; 2, 4, 6, 8 etc. to see performance improvement by scaling up.</p>
 <p>Happy hakking.</p>
+</div>
 </div>
 </div>
 
@@ -864,18 +695,18 @@ JVM’s <tt class="docutils literal"><span class="pre">-classpath</span></tt> op
       <div class="bottomnav">
       
         <p>
-        «&#160;&#160;<a href="getting-started-first-scala.html">Getting Started Tutorial (Scala): First Chapter</a>
+        «&#160;&#160;<a href="getting-started-with-akka-scala.html">Getting Started With Akka (Scala)</a>
         &#160;&#160;::&#160;&#160;
         <a class="uplink" href="../index.html">Contents</a>
         &#160;&#160;::&#160;&#160;
-        <a href="migration-manager-step-by-step-guide.html">Migration Manager: Step-by-step Guide</a>&#160;&#160;»
+        <a href="getting-started-with-play-scala.html">Getting Started With Play (Scala)</a>&#160;&#160;»
         </p>
 
       </div>
 
     <div class="footer">
         &copy; Copyright 2012, Typesafe Inc..
-      Last updated on Mar 08, 2012.
+      Last updated on Mar 13, 2012.
     </div>
   </body>
 </html>

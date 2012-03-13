@@ -9,7 +9,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Getting Started Tutorial (Scala with Eclipse) &mdash; Typesafe Documentation</title>
+    <title>Getting Started Tutorial (Scala with Eclipse) &mdash; Typesafe Stack Documentation</title>
     
     <link rel="stylesheet" href="../_static/typesafe.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -28,7 +28,7 @@
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <script type="text/javascript" src="../_static/theme_extras.js"></script>
-    <link rel="top" title="Typesafe Documentation" href="../index.html" /> 
+    <link rel="top" title="Typesafe Stack Documentation" href="../index.html" /> 
   </head>
   <body>
       <div class="header">
@@ -77,7 +77,7 @@
 </div>
 <div class="section" id="prerequisites">
 <h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this headline">¶</a></h2>
-<p>For this tutorial we need the <tt class="docutils literal"><span class="pre">scala-library.jar</span></tt> JAR and the <tt class="docutils literal"><span class="pre">akka-actor-1.2.jar</span></tt> JAR both in the <tt class="docutils literal"><span class="pre">lib</span></tt> directory of your Typesafe Stack installation. If you haven&#8217;t yet installed the Typesafe Stack, read the <a class="reference internal" href="../typesafe-stack/downloading-installing.html#downloading-installing"><em>Downloading and installing</em></a> instructions. For this tutorial we only need the Scala and Akka Actors modules. But feel free to install the full stack if you want to.</p>
+<p>For this tutorial we need the <tt class="docutils literal"><span class="pre">scala-library.jar</span></tt> JAR and the <tt class="docutils literal"><span class="pre">akka-actor-1.2.jar</span></tt> JAR both in the <tt class="docutils literal"><span class="pre">lib</span></tt> directory of your Typesafe Stack installation. If you haven&#8217;t yet installed the Typesafe Stack, read the <a class="reference internal" href="../typesafe-stack/downloading-installing.html#downloading-installing"><em>Installing the Typesafe Stack</em></a> instructions. For this tutorial we only need the Scala and Akka Actors modules. But feel free to install the full stack if you want to.</p>
 <p>This tutorial also assumes that you have Java 1.6 or later installed on you machine and <tt class="docutils literal"><span class="pre">java</span></tt> on your <tt class="docutils literal"><span class="pre">PATH</span></tt>. You also need to know how to run commands in a shell (ZSH, Bash, DOS etc.) and <a class="reference external" href="http://www.eclipse.org/downloads/">Eclipse version 3.6.x (Helios)</a>.</p>
 <p>You need to make sure that <tt class="docutils literal"><span class="pre">$JAVA_HOME</span></tt> environment variable is set to the root of the Java distribution. You also need to make sure that the <tt class="docutils literal"><span class="pre">$JAVA_HOME/bin</span></tt> is on your <tt class="docutils literal"><span class="pre">PATH</span></tt>.</p>
 <div class="highlight-text"><div class="highlight"><pre>$ export JAVA_HOME=..root of java distribution..
@@ -144,7 +144,7 @@ The AspectJ plugin already installs a suitable version of this component.</div><
 <img alt="../_images/build-path.png" src="../_images/build-path.png" />
 <div class="section" id="using-sbt-in-eclipse">
 <h3>Using SBT in Eclipse<a class="headerlink" href="#using-sbt-in-eclipse" title="Permalink to this headline">¶</a></h3>
-<p>If you are an <a class="reference external" href="http://code.google.com/p/simple-build-tool/">SBT</a> user, you can follow the <a class="reference internal" href="getting-started-first-scala.html#getting-started-first-scala-download-sbt"><em>Downloading and installing SBT</em></a> instruction and additionally install the <tt class="docutils literal"><span class="pre">sbt-eclipse</span></tt> plugin. This adds support for generating Eclipse project files from your SBT project. You need to update your SBT plugins definition in <tt class="docutils literal"><span class="pre">project/plugins</span></tt>:</p>
+<p>If you are an <a class="reference external" href="http://code.google.com/p/simple-build-tool/">SBT</a> user, you can follow the <em class="xref std std-ref">getting-started-first-scala-download-sbt</em> instruction and additionally install the <tt class="docutils literal"><span class="pre">sbt-eclipse</span></tt> plugin. This adds support for generating Eclipse project files from your SBT project. You need to update your SBT plugins definition in <tt class="docutils literal"><span class="pre">project/plugins</span></tt>:</p>
 <div class="highlight-scala"><div class="highlight"><pre><span class="k">import</span> <span class="nn">sbt._</span>
 
 <span class="k">class</span> <span class="nc">TutorialPlugins</span><span class="o">(</span><span class="n">info</span><span class="k">:</span> <span class="kt">ProjectInfo</span><span class="o">)</span> <span class="k">extends</span> <span class="nc">PluginDefinition</span><span class="o">(</span><span class="n">info</span><span class="o">)</span> <span class="o">{</span>
@@ -404,7 +404,7 @@ Calculation time:   858 millis
 
     <div class="footer">
         &copy; Copyright 2012, Typesafe Inc..
-      Last updated on Mar 08, 2012.
+      Last updated on Mar 13, 2012.
     </div>
   </body>
 </html>

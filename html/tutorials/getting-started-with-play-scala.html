@@ -1,0 +1,333 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Getting Started With Play (Scala) &mdash; Typesafe Stack Documentation</title>
+    
+    <link rel="stylesheet" href="../_static/typesafe.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/print.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '2.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/theme_extras.js"></script>
+    <link rel="top" title="Typesafe Stack Documentation" href="../index.html" />
+    <link rel="up" title="Tutorials" href="index.html" />
+    <link rel="next" title="Getting Started With Play (Java)" href="getting-started-with-play-java.html" />
+    <link rel="prev" title="Getting Started With Akka (Java)" href="getting-started-with-akka-java.html" /> 
+  </head>
+  <body>
+      <div class="header">
+        <a href="../index.html">
+          <img class="logo" src="../_static/logo.png" alt="Logo"/>
+        </a>
+      </div>
+      <div class="topnav">
+      
+        <p>
+        «&#160;&#160;<a href="getting-started-with-akka-java.html">Getting Started With Akka (Java)</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="../index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="getting-started-with-play-java.html">Getting Started With Play (Java)</a>&#160;&#160;»
+        </p>
+
+      </div>
+      <div class="content">
+        
+        
+  <div class="section" id="getting-started-with-play-scala">
+<span id="id1"></span><h1>Getting Started With Play (Scala)<a class="headerlink" href="#getting-started-with-play-scala" title="Permalink to this headline">¶</a></h1>
+<p>This small tutorial is going to teach you how to create a Hello World application with a twist using Play2 and Scala.</p>
+<div class="section" id="prerequisites">
+<h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this headline">¶</a></h2>
+<p>Before we can do that we need to install <cite>giter8</cite> (<tt class="docutils literal"><span class="pre">g8</span></tt>) and <cite>simple build tool</cite>
+(<tt class="docutils literal"><span class="pre">sbt</span></tt>). In case you have not done that yet you can find the instructions in the
+Typesafe Stack installation guide: <a class="reference internal" href="../typesafe-stack/downloading-installing.html#downloading-installing"><em>Installing the Typesafe Stack</em></a>.</p>
+</div>
+<div class="section" id="let-s-play">
+<h2>Let&#8217;s Play!<a class="headerlink" href="#let-s-play" title="Permalink to this headline">¶</a></h2>
+<p>The first thing we need to do is create a project template:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="n">g8</span> <span class="n">typesafehub</span><span class="o">/</span><span class="n">play</span><span class="o">-</span><span class="n">scala</span>
+</pre></div>
+</div>
+<p>Assuming you went with the default application name:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="n">cd</span> <span class="n">my_app</span>
+</pre></div>
+</div>
+<p>Now let&#8217;s run the development server and checkout the welcome page:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="n">sbt</span>
+<span class="o">&gt;</span> <span class="n">help</span> <span class="n">play</span>
+<span class="o">&gt;</span> <span class="n">run</span>
+</pre></div>
+</div>
+<p>Going to <tt class="docutils literal"><span class="pre">http://localhost:9000</span></tt> should show you Play&#8217;s welcome page.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">You can find Play2&#8217;s documentation online <a class="reference external" href="http://playframework.org/documentation/2.0">here</a>.</p>
+</div>
+</div>
+<div class="section" id="a-play-2-application">
+<h2>A Play 2 application<a class="headerlink" href="#a-play-2-application" title="Permalink to this headline">¶</a></h2>
+<p>A typical Play application looks like this:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="n">conf</span><span class="o">/</span><span class="n">application</span><span class="o">.</span><span class="n">conf</span> <span class="o">-&gt;</span> <span class="n">application</span> <span class="n">specific</span> <span class="n">configuration</span>
+<span class="n">conf</span><span class="o">/</span><span class="n">routes</span>           <span class="o">-&gt;</span> <span class="n">request</span> <span class="n">action</span> <span class="n">mapping</span> <span class="n">is</span> <span class="n">configured</span> <span class="n">in</span> <span class="k">this</span> <span class="n">file</span>
+<span class="n">conf</span><span class="o">/</span><span class="n">play</span><span class="o">.</span><span class="n">plugins</span>     <span class="o">-&gt;</span> <span class="n">you</span> <span class="n">can</span> <span class="n">register</span> <span class="k">new</span> <span class="n">custom</span> <span class="n">plugins</span> <span class="n">here</span>
+<span class="n">test</span>                  <span class="o">-&gt;</span> <span class="n">integration</span> <span class="n">and</span> <span class="n">unit</span> <span class="n">tests</span> <span class="n">should</span> <span class="n">come</span> <span class="n">here</span>
+<span class="n">app</span><span class="o">/</span><span class="n">controllers</span>       <span class="o">-&gt;</span> <span class="n">location</span> <span class="n">of</span> <span class="n">controllers</span>
+<span class="n">app</span><span class="o">/</span><span class="n">models</span>            <span class="o">-&gt;</span> <span class="n">location</span> <span class="n">of</span> <span class="n">models</span>
+<span class="n">app</span><span class="o">/</span><span class="n">views</span>             <span class="o">-&gt;</span> <span class="n">location</span> <span class="n">of</span> <span class="n">views</span>
+</pre></div>
+</div>
+<p>Now that we have an application app and running and we understand how a project is laid out, it&#8217;s time to start hacking!</p>
+<p>First, let&#8217;s delete the welcome pages:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="n">rm</span> <span class="n">app</span><span class="o">/</span><span class="n">controllers</span><span class="o">/</span><span class="nc">Application</span><span class="o">.</span><span class="n">scala</span>
+<span class="n">rm</span> <span class="n">app</span><span class="o">/</span><span class="n">views</span><span class="o">/</span><span class="n">index</span><span class="o">.</span><span class="n">scala</span><span class="o">.</span><span class="n">html</span>
+<span class="n">rm</span> <span class="n">app</span><span class="o">/</span><span class="n">views</span><span class="o">/</span><span class="n">main</span><span class="o">.</span><span class="n">scala</span><span class="o">.</span><span class="n">html</span>
+<span class="n">rm</span> <span class="n">conf</span><span class="o">/</span><span class="n">routes</span>
+</pre></div>
+</div>
+<p>The next step is to define the request action mapping (routes).</p>
+</div>
+<div class="section" id="routes">
+<h2>Routes<a class="headerlink" href="#routes" title="Permalink to this headline">¶</a></h2>
+<p>The route file (<tt class="docutils literal"><span class="pre">conf/routes</span></tt>) is the heart of every Play application.</p>
+<p>Certain parts of the URL can be passed to controller methods as arguments, however in this simple example we will just map <tt class="docutils literal"><span class="pre">/</span></tt> to the <tt class="docutils literal"><span class="pre">index</span></tt> method, <tt class="docutils literal"><span class="pre">/hello</span></tt> to <tt class="docutils literal"><span class="pre">sayHello</span></tt> and finally, assets will be served by a predefined controller <tt class="docutils literal"><span class="pre">Assets</span></tt>.</p>
+<div class="highlight-text"><div class="highlight"><pre># Home page
+GET     /                           controllers.Application.index
+
+# Hello action
+GET     /hello                      controllers.Application.sayHello
+
+# Map static resources from the /public folder to the /assets URL path
+GET     /assets/*file               controllers.Assets.at(path=&quot;/public&quot;, file)
+</pre></div>
+</div>
+<p>After you are done, just refresh the browser. You should see compilation errors complaining about missing controller methods. That&#8217;s OK for now, we will fix this later.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Play&#8217;s smart development console lets you compile classes, routes, templates and javascript on the fly. That is, now extra compilation step is necessary, just refresh the browser and you are ready to go.</p>
+</div>
+<p>Now let&#8217;s create our first model.</p>
+</div>
+<div class="section" id="models">
+<h2>Models<a class="headerlink" href="#models" title="Permalink to this headline">¶</a></h2>
+<p>Most applications have some sort of domain models. Domain models can be tied to databases, modern NoSQL data stores, business logic or forms. For our Hello World app first we&#8217;d need to define a form. Play managed forms come with validation support.</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="k">package</span> <span class="nn">models</span>
+
+<span class="k">import</span> <span class="nn">play.api._</span>
+<span class="k">import</span> <span class="nn">play.api.data._</span>
+<span class="k">import</span> <span class="nn">play.api.data.Forms._</span>
+
+ <span class="k">val</span> <span class="n">helloForm</span> <span class="k">=</span> <span class="nc">Form</span><span class="o">(</span>
+  <span class="n">tuple</span><span class="o">(</span>
+    <span class="s">&quot;name&quot;</span> <span class="o">-&gt;</span> <span class="n">nonEmptyText</span><span class="o">,</span>
+    <span class="s">&quot;repeat&quot;</span> <span class="o">-&gt;</span> <span class="n">number</span><span class="o">(</span><span class="n">min</span> <span class="k">=</span> <span class="mi">1</span><span class="o">,</span> <span class="n">max</span> <span class="k">=</span> <span class="mi">100</span><span class="o">),</span>
+    <span class="s">&quot;color&quot;</span> <span class="o">-&gt;</span> <span class="n">optional</span><span class="o">(</span><span class="n">text</span><span class="o">)</span>
+  <span class="o">)</span>
+<span class="o">)</span>
+</pre></div>
+</div>
+<p>As you can see Play&#8217;s built-in form handler provides you with an easy to understand DSL.
+Here we defined a form (<tt class="docutils literal"><span class="pre">helloForm</span></tt>), with two mandatory fields and one optional.</p>
+<p>Let&#8217;s move on to the views.</p>
+</div>
+<div class="section" id="views">
+<h2>Views<a class="headerlink" href="#views" title="Permalink to this headline">¶</a></h2>
+<p>Play comes with a Scala-based template engine that provides type and compiled checked templates. While it&#8217;s very easy to use any templating solution with Play we will stick to the one that comes with the framework.</p>
+<p>First we are going to create the layout file.</p>
+<p>(Layout files should be named as <tt class="docutils literal"><span class="pre">main.scala.html</span></tt> by convention)</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="o">@(</span><span class="n">title</span><span class="k">:</span> <span class="kt">String</span><span class="o">)(</span><span class="n">content</span><span class="k">:</span> <span class="kt">Html</span><span class="o">)</span>
+
+<span class="o">&lt;!</span><span class="nc">DOCTYPE</span> <span class="n">html</span><span class="o">&gt;</span>
+
+<span class="o">&lt;</span><span class="n">html</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">head</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="n">title</span><span class="o">&gt;@</span><span class="n">title</span><span class="o">&lt;/</span><span class="n">title</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="n">link</span> <span class="n">rel</span><span class="o">=</span><span class="s">&quot;stylesheet&quot;</span> <span class="n">media</span><span class="o">=</span><span class="s">&quot;screen&quot;</span> <span class="n">href</span><span class="o">=</span><span class="s">&quot;@routes.Assets.at(&quot;</span><span class="n">stylesheets</span><span class="o">/</span><span class="n">main</span><span class="o">.</span><span class="n">css</span><span class="s">&quot;)&quot;</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="n">link</span> <span class="n">rel</span><span class="o">=</span><span class="s">&quot;shortcut icon&quot;</span> <span class="n">type</span><span class="o">=</span><span class="s">&quot;image/png&quot;</span> <span class="n">href</span><span class="o">=</span><span class="s">&quot;@routes.Assets.at(&quot;</span><span class="n">images</span><span class="o">/</span><span class="n">favicon</span><span class="o">.</span><span class="n">png</span><span class="s">&quot;)&quot;</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="n">script</span> <span class="n">src</span><span class="o">=</span><span class="s">&quot;@routes.Assets.at(&quot;</span><span class="n">javascripts</span><span class="o">/</span><span class="n">jquery</span><span class="o">-</span><span class="mf">1.6</span><span class="o">.</span><span class="mf">4.</span><span class="n">min</span><span class="o">.</span><span class="n">js</span><span class="s">&quot;)&quot;</span> <span class="n">type</span><span class="o">=</span><span class="s">&quot;text/javascript&quot;</span><span class="o">&gt;&lt;/</span><span class="n">script</span><span class="o">&gt;</span>
+    <span class="o">&lt;/</span><span class="n">head</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">body</span><span class="o">&gt;</span>
+
+        <span class="o">&lt;</span><span class="n">header</span><span class="o">&gt;</span>
+            <span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s">&quot;@routes.Application.index&quot;</span><span class="o">&gt;@</span><span class="n">title</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span>
+        <span class="o">&lt;/</span><span class="n">header</span><span class="o">&gt;</span>
+
+        <span class="o">&lt;</span><span class="n">section</span><span class="o">&gt;</span>
+            <span class="nd">@content</span>
+        <span class="o">&lt;/</span><span class="n">section</span><span class="o">&gt;</span>
+
+    <span class="o">&lt;/</span><span class="n">body</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">html</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>Since Play templates statically typed, they always need to start with variable declaration (in this case we define a string title and a html snippet called content). You might also notice the magic <tt class="docutils literal"><span class="pre">&#64;</span></tt> sign which tells Play that a Scala expression or method call will follow.</p>
+<p>Now let&#8217;s reuse the layout.</p>
+<div class="highlight-scala"><pre>@(helloForm: Form[(String,Int,Option[String])])
+
+@import helper._
+
+@main(title = "The 'helloworld' application") {
+
+    &lt;h1&gt;Configure your 'Hello world':&lt;/h1&gt;
+
+    @form(action = routes.Application.sayHello, args = 'id -&gt; "helloform") {
+
+        @inputText(
+            field = helloForm("name"),
+            args = '_label -&gt; "What's your name?", 'placeholder -&gt; "World"
+        )
+
+        @inputText(
+            field = helloForm("repeat"),
+            args = '_label -&gt; "How many times?", 'size -&gt; 3, 'placeholder -&gt; 10
+        )
+
+        @select(
+            field = helloForm("color"),
+            options = options(
+                "" -&gt; "Default",
+                "red" -&gt; "Red",
+                "green" -&gt; "Green",
+                "blue" -&gt; "Blue"
+            ),
+            args = '_label -&gt; "Choose a color"
+        )
+
+        &lt;p class="buttons"&gt;
+            &lt;input type="submit" id="submit"&gt;
+        &lt;p&gt;
+    }
+}</pre>
+</div>
+<p>Here we reused the layout (via <tt class="docutils literal"><span class="pre">&#64;main</span></tt>) and defined a form using play&#8217;s form template helper. Finally if the user submits the form we will display this result page.</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="o">@(</span><span class="n">name</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span> <span class="n">repeat</span><span class="k">:</span> <span class="kt">Int</span><span class="o">,</span> <span class="n">color</span><span class="k">:</span> <span class="kt">Option</span><span class="o">[</span><span class="kt">String</span><span class="o">])</span>
+
+<span class="nd">@main</span><span class="o">(</span><span class="s">&quot;Here is the result:&quot;</span><span class="o">)</span> <span class="o">{</span>
+
+    <span class="o">&lt;</span><span class="n">ul</span> <span class="n">style</span><span class="o">=</span><span class="s">&quot;color: @color.getOrElse(&quot;</span><span class="n">inherited</span><span class="s">&quot;)&quot;</span><span class="o">&gt;</span>
+        <span class="nd">@for</span><span class="o">(</span><span class="k">_</span> <span class="k">&lt;-</span> <span class="mi">1</span> <span class="n">to</span> <span class="n">repeat</span><span class="o">)</span> <span class="o">{</span>
+            <span class="o">&lt;</span><span class="n">li</span><span class="o">&gt;</span><span class="nc">Hello</span> <span class="nd">@name</span><span class="o">!&lt;/</span><span class="n">li</span><span class="o">&gt;</span>
+        <span class="o">}</span>
+    <span class="o">&lt;/</span><span class="n">ul</span><span class="o">&gt;</span>
+
+    <span class="o">&lt;</span><span class="n">p</span> <span class="n">class</span><span class="o">=</span><span class="s">&quot;buttons&quot;</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s">&quot;@routes.Application.index&quot;</span><span class="o">&gt;</span><span class="nc">Back</span> <span class="n">to</span> <span class="n">the</span> <span class="n">form</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span>
+    <span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+<p>Here we are using Play&#8217;s template engine&#8217;s for loop to iterate over <tt class="docutils literal"><span class="pre">repeat</span></tt> and print <tt class="docutils literal"><span class="pre">&#64;name</span></tt> <tt class="docutils literal"><span class="pre">repeat</span></tt> number of times.</p>
+<p>Now let&#8217;s write the controller code which should tie things together!</p>
+<p>Controllers should be kept in controllers package by convention. They also extend <tt class="docutils literal"><span class="pre">play.api.mvc.Controller</span></tt>.</p>
+</div>
+<div class="section" id="controllers">
+<h2>Controllers<a class="headerlink" href="#controllers" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-scala"><div class="highlight"><pre><span class="k">package</span> <span class="nn">controllers</span>
+
+<span class="k">import</span> <span class="nn">play.api._</span>
+<span class="k">import</span> <span class="nn">play.api.mvc._</span>
+
+<span class="k">import</span> <span class="nn">models._</span>
+<span class="k">import</span> <span class="nn">views._</span>
+
+<span class="k">object</span> <span class="nc">Application</span> <span class="k">extends</span> <span class="nc">Controller</span> <span class="o">{</span>
+
+ <span class="cm">/**</span>
+<span class="cm">  * Home page</span>
+<span class="cm">  */</span>
+  <span class="k">def</span> <span class="n">index</span> <span class="k">=</span> <span class="nc">Action</span> <span class="o">{</span>
+    <span class="nc">Ok</span><span class="o">(</span><span class="n">html</span><span class="o">.</span><span class="n">index</span><span class="o">(</span><span class="n">helloForm</span><span class="o">))</span>
+  <span class="o">}</span>
+
+  <span class="cm">/**</span>
+<span class="cm">   * Handles the form submission.</span>
+<span class="cm">   */</span>
+  <span class="k">def</span> <span class="n">sayHello</span> <span class="k">=</span> <span class="nc">Action</span> <span class="o">{</span> <span class="k">implicit</span> <span class="n">request</span> <span class="k">=&gt;</span>
+    <span class="n">helloForm</span><span class="o">.</span><span class="n">bindFromRequest</span><span class="o">.</span><span class="n">fold</span><span class="o">(</span>
+      <span class="n">formWithErrors</span> <span class="k">=&gt;</span> <span class="nc">BadRequest</span><span class="o">(</span><span class="n">html</span><span class="o">.</span><span class="n">index</span><span class="o">(</span><span class="n">formWithErrors</span><span class="o">)),</span>
+      <span class="o">{</span><span class="k">case</span> <span class="o">(</span><span class="n">name</span><span class="o">,</span> <span class="n">repeat</span><span class="o">,</span> <span class="n">color</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="nc">Ok</span><span class="o">(</span><span class="n">html</span><span class="o">.</span><span class="n">hello</span><span class="o">(</span><span class="n">name</span><span class="o">,</span> <span class="n">repeat</span><span class="o">.</span><span class="n">toInt</span><span class="o">,</span> <span class="n">color</span><span class="o">))}</span>
+    <span class="o">)</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+<p>A Play controller method should return an <tt class="docutils literal"><span class="pre">Action</span></tt> which takes a Scala expression that evaluates to a <tt class="docutils literal"><span class="pre">Result</span></tt>.
+<tt class="docutils literal"><span class="pre">def</span> <span class="pre">index</span></tt> simply renders our index page (notice the naming convention how <tt class="docutils literal"><span class="pre">index.scala.html</span></tt> template got compiled into <tt class="docutils literal"><span class="pre">views.html.index</span></tt> class).  <tt class="docutils literal"><span class="pre">sayHello</span></tt> is a bit more complicated.</p>
+<p>It uses our previously defined <tt class="docutils literal"><span class="pre">helloForm</span></tt> form to bind the values from the implicit request parameter to the form values. After that we either send back the form with errors or render the result page with the extracted values. As you could see form handling and validation are extremely easy things to do in Play 2.</p>
+<p>But wait! We are not done yet. As good agile developers, we still have a remaining task: we need to write a test for our awesome Hello World app.</p>
+<p>Play supports both unit and integration tests. Integrations tests are firing up Play applications and you can test your app via a browser, while unit tests allow you to test only a certain aspect of your application. In this case we will create a <tt class="docutils literal"><span class="pre">IntegrationSpec</span></tt> for our application.</p>
+</div>
+<div class="section" id="integrationspec">
+<h2>IntegrationSpec<a class="headerlink" href="#integrationspec" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-scala"><div class="highlight"><pre><span class="k">package</span> <span class="nn">test</span>
+
+<span class="k">import</span> <span class="nn">org.specs2.mutable._</span>
+
+<span class="k">import</span> <span class="nn">play.api.test._</span>
+<span class="k">import</span> <span class="nn">play.api.test.Helpers._</span>
+
+<span class="k">class</span> <span class="nc">IntegrationSpec</span> <span class="k">extends</span> <span class="nc">Specification</span> <span class="o">{</span>
+
+  <span class="s">&quot;Application&quot;</span> <span class="n">should</span> <span class="o">{</span>
+
+    <span class="s">&quot;work from within a browser&quot;</span> <span class="n">in</span> <span class="o">{</span>
+      <span class="n">running</span><span class="o">(</span><span class="nc">TestServer</span><span class="o">(</span><span class="mi">3333</span><span class="o">),</span> <span class="nc">HTMLUNIT</span><span class="o">)</span> <span class="o">{</span> <span class="n">browser</span> <span class="k">=&gt;</span>
+        <span class="n">browser</span><span class="o">.</span><span class="n">goTo</span><span class="o">(</span><span class="s">&quot;http://localhost:3333/&quot;</span><span class="o">)</span>
+
+        <span class="n">browser</span><span class="o">.</span><span class="n">$</span><span class="o">(</span><span class="s">&quot;h1&quot;</span><span class="o">).</span><span class="n">first</span><span class="o">.</span><span class="n">getText</span> <span class="n">must</span> <span class="n">equalTo</span><span class="o">(</span><span class="s">&quot;Configure your &#39;Hello world&#39;:&quot;</span><span class="o">)</span>
+
+        <span class="n">browser</span><span class="o">.</span><span class="n">$</span><span class="o">(</span><span class="s">&quot;#name&quot;</span><span class="o">).</span><span class="n">text</span><span class="o">(</span><span class="s">&quot;Bob&quot;</span><span class="o">)</span>
+        <span class="n">browser</span><span class="o">.</span><span class="n">$</span><span class="o">(</span><span class="s">&quot;#submit&quot;</span><span class="o">).</span><span class="n">click</span><span class="o">()</span>
+        <span class="n">browser</span><span class="o">.</span><span class="n">$</span><span class="o">(</span><span class="s">&quot;dl.error&quot;</span><span class="o">).</span><span class="n">size</span> <span class="n">must</span> <span class="n">equalTo</span><span class="o">(</span><span class="mi">1</span><span class="o">)</span>
+        <span class="n">browser</span><span class="o">.</span><span class="n">$</span><span class="o">(</span><span class="s">&quot;#name&quot;</span><span class="o">).</span><span class="n">first</span><span class="o">.</span><span class="n">getValue</span> <span class="n">must</span> <span class="n">equalTo</span><span class="o">(</span><span class="s">&quot;Bob&quot;</span><span class="o">)</span>
+      <span class="o">}</span>
+    <span class="o">}</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+<p>As you can see we are firing up our application using a <tt class="docutils literal"><span class="pre">TestServer</span></tt> that&#8217;s using port <tt class="docutils literal"><span class="pre">3333</span></tt> and <cite>HTMLUNIT</cite> (which is essentially a headless browser). After that we test whether certain html elements were present on the page.</p>
+<p>And that&#8217;s it!</p>
+<p>The full sample application can be downloaded from <a class="reference external" href="github.com/playframework/Play20/samples/scala/helloword">here</a>.</p>
+</div>
+</div>
+
+
+      </div>
+      <div class="bottomnav">
+      
+        <p>
+        «&#160;&#160;<a href="getting-started-with-akka-java.html">Getting Started With Akka (Java)</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="../index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="getting-started-with-play-java.html">Getting Started With Play (Java)</a>&#160;&#160;»
+        </p>
+
+      </div>
+
+    <div class="footer">
+        &copy; Copyright 2012, Typesafe Inc..
+      Last updated on Mar 13, 2012.
+    </div>
+  </body>
+</html>

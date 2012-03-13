@@ -1,46 +1,177 @@
 .. _downloading-installing:
 
-Downloading and installing
-============================================================
+Installing the Typesafe Stack
+=============================
 
-Download the Typesafe Stack from `http://typesafe.com/stack/download <http://typesafe.com/stack/download>`_. There you can select the installer that fits your platform best:
+The Typesafe Stack is downloadable in several flavors depending on your preferred choice of platform.
+When installing the Typesafe Stack you will have access to Scala, `sbt` and `giter8` on your local system.
 
-- ``.exe`` for Windows
-- ``.dmg`` for Mac
-- ``.jar`` for platform independent
+Scala, Play and Akka starter/sample projects can be installed via `giter8` templates - see :ref:`template-projects`.
 
-Now let's install the stack by double-clicking on the installer. You are free to install only the components you need, the installer will make sure that dependencies among components are correctly resolved.
+After the Stack has been installed you can try it out by opening a terminal window and type::
 
-I choose to install the stack into ``/Users/jboner/tools/typesafe-stack``.
+    $ scala -version
 
-If we now step into the directory where we installed the stack in you can see that the distribution looks like this (for a full install).
+Windows 
+-------
 
-.. code-block:: text
+Download and run `this exe file <http://typesafe.artifactoryonline.com/typesafe/windows-releases/com/typesafe/typesafe-stack/2.0/typesafe-stack-2.0.exe>`_. Follow the installer instructions.
 
-    $ cd /Users/jboner/tools/typesafe-stack
-    $ ls -l
-    total 24
-    drwxr-xr-x  14 jboner  staff   476 May  9 13:21 .
-    drwxr-xr-x   3 jboner  staff   102 May  9 13:20 ..
-    drwxr-xr-x   5 jboner  staff   170 May  9 13:25 Uninstaller
-    drwxr-xr-x  18 jboner  staff   612 May  9 13:21 bin
-    drwxr-xr-x   6 jboner  staff   204 May  9 13:21 config
-    drwxr-xr-x   3 jboner  staff   102 May  9 13:21 deploy
-    drwxr-xr-x   9 jboner  staff   306 May  9 13:21 doc
-    drwxr-xr-x  74 jboner  staff  2516 May  9 13:21 lib
-    drwxr-xr-x   3 jboner  staff   102 May  9 13:20 man
-    drwxr-xr-x   6 jboner  staff   204 May  9 13:20 meta
-    drwxr-xr-x   6 jboner  staff   204 May  9 13:20 misc
-    drwxr-xr-x   7 jboner  staff   238 May  9 13:20 src
 
-The following is a short description of each folders' content.
+OSX
+---
 
-- In the ``Uninstaller`` directory contains an uninstaller program that can be used to fully remove the typesafe-stack.
-- In the ``bin`` directory we have all the scripts, both for Scala and Akka.
-- In the ``config`` directory we have Akka's configuration files, e.g. ``akka.conf`` and the reference config ``akka-reference.conf``.
-- In the ``deploy`` directory you put Akka applications you want to be loaded by the Akka Microkernel
-- In the ``doc`` directory we have the documentation.
-- In the ``lib`` directory we have all the JARs, both Scala, Akka and their dependency JARs.
-- In the ``man`` directory we have Unix documentation pages for all Scala scripts located in the ``bin`` directory.
-- In the ``misc`` directory we have some tool for Scala.
-- In the ``src`` directory we have all sources' JARs, both for Scala and Akka.
+Use `Homebrew <http://mxcl.github.com/homebrew/>`_ to install - open a terminal window and type::
+
+    $ brew install scala sbt maven giter8    
+
+You can exclude the packages you don't need (done by not including them in the line above).
+We do, however, recommend that you as a minimum install Scala, `sbt` (or `Maven` if you are 
+developing in Java) and `giter8`.
+
+
+Debian/Ubuntu
+-------------
+
+First you need to add the Typesafe repository information to your list of trusted sources in order for ``apt`` to work properly. 
+Download `this file <http://apt.typesafe.com/repo-deb-build-0002.deb>`_ and install it (by opening the file in Ubuntu Software Center);
+this will properly set-up the ``apt.typesafe.com`` repository in ``/etc/apt/sources.list.d/typesafe-apt.list``.
+
+Open a terminal window and type::
+
+    $ apt-get update
+    $ apt-get install typesafe-stack
+
+
+Redhat/CentOS - Download RPM
+----------------------------
+
+Click on `this link <http://typesafe-repo-2.0.0-1.noarch.rpm>`_ to install the RPM.
+
+
+Redhat/CentOS - Yum
+-------------------
+
+Create a file called ``typesafe.repo`` in the folder ``/etc/yum.repos.d/`` containing this information::
+
+    [typesafe]
+    name=Typesafe Rpm Repository
+    baseurl=http://rpm.typesafe.com/
+    enabled=1
+
+Next, open a terminal window and type::
+
+    $ yum install typesafe-stack
+
+
+Universal
+---------
+
+Download `this zip file <http://typesafe.artifactoryonline.com/typesafe/>`_ and unpack it to your local file system.
+
+.. _template-projects:
+
+Template projects for Scala, Akka and Play
+==========================================
+
+There are `giter8` templates prepared for Play and Akka with Scala or Java. If you have followed the instructions above you should have `giter8` installed on your system and this is used to download the template projects.
+
+Scala
+-----
+
+Plain Scala project template::
+
+   $ g8 typesafehub/scala-sbt
+   
+   # cd into the newly created directory and run with 'sbt run'
+
+Akka
+----
+
+Akka project template for Scala (and `sbt`) users::
+
+   $ g8 typesafehub/akka-scala-sbt
+
+   # cd into the newly created directory and run with 'sbt run'
+
+Akka project template for Java (and `Maven`) users::
+
+   $ g8 typesafehub/akka-java-maven
+   
+   # cd into the newly created directory and run with 'mvn compile exec:java'
+
+Play
+----
+
+Play project template for Scala users::
+
+   $ g8 typesafehub/play-scala 
+
+   # cd into the newly created directory and run with 'sbt run'
+
+Play project template for Java users::
+
+   $ g8 typesafehub/play-java 
+
+   # cd into the newly created directory and run with 'sbt run'
+
+Play-Mini
+---------
+
+Play-mini project template for Scala users::
+
+   $ g8 pk11/play-mini-scala 
+
+   # cd into the newly created directory and run with 'sbt run'   
+
+Play-mini project template for Java users::
+
+   $ g8 pk11/play-mini-java 
+
+   # cd into the newly created directory and run with 'sbt run'   
+
+
+Module with Misc Sample Projects for the Typesafe Stack
+-------------------------------------------------------
+
+This module contains of five sample projects.
+
+For Java:
+
+* comet-clock
+* play-empty
+
+For Scala:
+
+* akka-chat
+* pi-calculator
+* play-mini
+
+Check them initial-delayout with::
+
+   $ g8 typesafehub/stack-examples
+
+Templates for the Getting Started Guides
+----------------------------------------
+
+You can also install the "Getting Started with Akka" and  "Getting Started with Play" tutorial templates - both with one for Scala and one for Java.
+
+Akka tutorial for Scala::
+
+   $ g8 typesafehub/akka-first-tutorial-scala
+
+   # cd into the newly created directory and run with 'sbt run'
+
+Akka tutorial for Java::
+
+   $ g8 typesafehub/akka-first-tutorial-java
+
+   # cd into the newly created directory and run with 'mvn compile exec:java' 
+
+Play tutorial for Scala::
+
+   $ g8 typesafehub/play-scala
+
+Play tutorial for Java::
+
+   $ g8 typesafehub/play-java

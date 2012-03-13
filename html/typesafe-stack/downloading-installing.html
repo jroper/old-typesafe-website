@@ -9,7 +9,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Downloading and installing &mdash; Typesafe Documentation</title>
+    <title>Installing the Typesafe Stack &mdash; Typesafe Stack Documentation</title>
     
     <link rel="stylesheet" href="../_static/typesafe.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -28,7 +28,7 @@
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <script type="text/javascript" src="../_static/theme_extras.js"></script>
-    <link rel="top" title="Typesafe Documentation" href="../index.html" />
+    <link rel="top" title="Typesafe Stack Documentation" href="../index.html" />
     <link rel="up" title="Typesafe Stack" href="index.html" />
     <link rel="next" title="Tutorials" href="../tutorials/index.html" />
     <link rel="prev" title="What is the Typesafe Stack?" href="what-is-it.html" /> 
@@ -53,46 +53,153 @@
       <div class="content">
         
         
-  <div class="section" id="downloading-and-installing">
-<span id="downloading-installing"></span><h1>Downloading and installing<a class="headerlink" href="#downloading-and-installing" title="Permalink to this headline">¶</a></h1>
-<p>Download the Typesafe Stack from <a class="reference external" href="http://typesafe.com/stack/download">http://typesafe.com/stack/download</a>. There you can select the installer that fits your platform best:</p>
-<ul class="simple">
-<li><tt class="docutils literal"><span class="pre">.exe</span></tt> for Windows</li>
-<li><tt class="docutils literal"><span class="pre">.dmg</span></tt> for Mac</li>
-<li><tt class="docutils literal"><span class="pre">.jar</span></tt> for platform independent</li>
-</ul>
-<p>Now let&#8217;s install the stack by double-clicking on the installer. You are free to install only the components you need, the installer will make sure that dependencies among components are correctly resolved.</p>
-<p>I choose to install the stack into <tt class="docutils literal"><span class="pre">/Users/jboner/tools/typesafe-stack</span></tt>.</p>
-<p>If we now step into the directory where we installed the stack in you can see that the distribution looks like this (for a full install).</p>
-<div class="highlight-text"><div class="highlight"><pre>$ cd /Users/jboner/tools/typesafe-stack
-$ ls -l
-total 24
-drwxr-xr-x  14 jboner  staff   476 May  9 13:21 .
-drwxr-xr-x   3 jboner  staff   102 May  9 13:20 ..
-drwxr-xr-x   5 jboner  staff   170 May  9 13:25 Uninstaller
-drwxr-xr-x  18 jboner  staff   612 May  9 13:21 bin
-drwxr-xr-x   6 jboner  staff   204 May  9 13:21 config
-drwxr-xr-x   3 jboner  staff   102 May  9 13:21 deploy
-drwxr-xr-x   9 jboner  staff   306 May  9 13:21 doc
-drwxr-xr-x  74 jboner  staff  2516 May  9 13:21 lib
-drwxr-xr-x   3 jboner  staff   102 May  9 13:20 man
-drwxr-xr-x   6 jboner  staff   204 May  9 13:20 meta
-drwxr-xr-x   6 jboner  staff   204 May  9 13:20 misc
-drwxr-xr-x   7 jboner  staff   238 May  9 13:20 src
+  <div class="section" id="installing-the-typesafe-stack">
+<span id="downloading-installing"></span><h1>Installing the Typesafe Stack<a class="headerlink" href="#installing-the-typesafe-stack" title="Permalink to this headline">¶</a></h1>
+<p>The Typesafe Stack is downloadable in several flavors depending on your preferred choice of platform.
+When installing the Typesafe Stack you will have access to Scala, <cite>sbt</cite> and <cite>giter8</cite> on your local system.</p>
+<p>Scala, Play and Akka starter/sample projects can be installed via <cite>giter8</cite> templates - see <a class="reference internal" href="#template-projects"><em>Template projects for Scala, Akka and Play</em></a>.</p>
+<p>After the Stack has been installed you can try it out by opening a terminal window and type:</p>
+<div class="highlight-scala"><pre>$ scala -version</pre>
+</div>
+<div class="section" id="windows">
+<h2>Windows<a class="headerlink" href="#windows" title="Permalink to this headline">¶</a></h2>
+<p>Download and run <a class="reference external" href="http://typesafe.artifactoryonline.com/typesafe/windows-releases/com/typesafe/typesafe-stack/2.0/typesafe-stack-2.0.exe">this exe file</a>. Follow the installer instructions.</p>
+</div>
+<div class="section" id="osx">
+<h2>OSX<a class="headerlink" href="#osx" title="Permalink to this headline">¶</a></h2>
+<p>Use <a class="reference external" href="http://mxcl.github.com/homebrew/">Homebrew</a> to install - open a terminal window and type:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="n">$</span> <span class="n">brew</span> <span class="n">install</span> <span class="n">scala</span> <span class="n">sbt</span> <span class="n">maven</span> <span class="n">giter8</span>
 </pre></div>
 </div>
-<p>The following is a short description of each folders&#8217; content.</p>
+<p>You can exclude the packages you don&#8217;t need (done by not including them in the line above).
+We do, however, recommend that you as a minimum install Scala, <cite>sbt</cite> (or <cite>Maven</cite> if you are
+developing in Java) and <cite>giter8</cite>.</p>
+</div>
+<div class="section" id="debian-ubuntu">
+<h2>Debian/Ubuntu<a class="headerlink" href="#debian-ubuntu" title="Permalink to this headline">¶</a></h2>
+<p>First you need to add the Typesafe repository information to your list of trusted sources in order for <tt class="docutils literal"><span class="pre">apt</span></tt> to work properly.
+Download <a class="reference external" href="http://apt.typesafe.com/repo-deb-build-0002.deb">this file</a> and install it (by opening the file in Ubuntu Software Center);
+this will properly set-up the <tt class="docutils literal"><span class="pre">apt.typesafe.com</span></tt> repository in <tt class="docutils literal"><span class="pre">/etc/apt/sources.list.d/typesafe-apt.list</span></tt>.</p>
+<p>Open a terminal window and type:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="n">$</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">update</span>
+<span class="n">$</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">install</span> <span class="n">typesafe</span><span class="o">-</span><span class="n">stack</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="redhat-centos-download-rpm">
+<h2>Redhat/CentOS - Download RPM<a class="headerlink" href="#redhat-centos-download-rpm" title="Permalink to this headline">¶</a></h2>
+<p>Click on <a class="reference external" href="http://typesafe-repo-2.0.0-1.noarch.rpm">this link</a> to install the RPM.</p>
+</div>
+<div class="section" id="redhat-centos-yum">
+<h2>Redhat/CentOS - Yum<a class="headerlink" href="#redhat-centos-yum" title="Permalink to this headline">¶</a></h2>
+<p>Create a file called <tt class="docutils literal"><span class="pre">typesafe.repo</span></tt> in the folder <tt class="docutils literal"><span class="pre">/etc/yum.repos.d/</span></tt> containing this information:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="o">[</span><span class="k">type</span><span class="kt">safe</span><span class="o">]</span>
+<span class="n">name</span><span class="k">=</span><span class="nc">Typesafe</span> <span class="nc">Rpm</span> <span class="nc">Repository</span>
+<span class="n">baseurl</span><span class="k">=</span><span class="n">http</span><span class="o">://</span><span class="n">rpm</span><span class="o">.</span><span class="n">typesafe</span><span class="o">.</span><span class="n">com</span><span class="o">/</span>
+<span class="n">enabled</span><span class="k">=</span><span class="mi">1</span>
+</pre></div>
+</div>
+<p>Next, open a terminal window and type:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="n">$</span> <span class="n">yum</span> <span class="n">install</span> <span class="n">typesafe</span><span class="o">-</span><span class="n">stack</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="universal">
+<h2>Universal<a class="headerlink" href="#universal" title="Permalink to this headline">¶</a></h2>
+<p>Download <a class="reference external" href="http://typesafe.artifactoryonline.com/typesafe/">this zip file</a> and unpack it to your local file system.</p>
+</div>
+</div>
+<div class="section" id="template-projects-for-scala-akka-and-play">
+<span id="template-projects"></span><h1>Template projects for Scala, Akka and Play<a class="headerlink" href="#template-projects-for-scala-akka-and-play" title="Permalink to this headline">¶</a></h1>
+<p>There are <cite>giter8</cite> templates prepared for Play and Akka with Scala or Java. If you have followed the instructions above you should have <cite>giter8</cite> installed on your system and this is used to download the template projects.</p>
+<div class="section" id="scala">
+<h2>Scala<a class="headerlink" href="#scala" title="Permalink to this headline">¶</a></h2>
+<p>Plain Scala project template:</p>
+<div class="highlight-scala"><pre>$ g8 typesafehub/scala-sbt
+
+# cd into the newly created directory and run with 'sbt run'</pre>
+</div>
+</div>
+<div class="section" id="akka">
+<h2>Akka<a class="headerlink" href="#akka" title="Permalink to this headline">¶</a></h2>
+<p>Akka project template for Scala (and <cite>sbt</cite>) users:</p>
+<div class="highlight-scala"><pre>$ g8 typesafehub/akka-scala-sbt
+
+# cd into the newly created directory and run with 'sbt run'</pre>
+</div>
+<p>Akka project template for Java (and <cite>Maven</cite>) users:</p>
+<div class="highlight-scala"><pre>$ g8 typesafehub/akka-java-maven
+
+# cd into the newly created directory and run with 'mvn compile exec:java'</pre>
+</div>
+</div>
+<div class="section" id="play">
+<h2>Play<a class="headerlink" href="#play" title="Permalink to this headline">¶</a></h2>
+<p>Play project template for Scala users:</p>
+<div class="highlight-scala"><pre>$ g8 typesafehub/play-scala
+
+# cd into the newly created directory and run with 'sbt run'</pre>
+</div>
+<p>Play project template for Java users:</p>
+<div class="highlight-scala"><pre>$ g8 typesafehub/play-java
+
+# cd into the newly created directory and run with 'sbt run'</pre>
+</div>
+</div>
+<div class="section" id="play-mini">
+<h2>Play-Mini<a class="headerlink" href="#play-mini" title="Permalink to this headline">¶</a></h2>
+<p>Play-mini project template for Scala users:</p>
+<div class="highlight-scala"><pre>$ g8 pk11/play-mini-scala
+
+# cd into the newly created directory and run with 'sbt run'</pre>
+</div>
+<p>Play-mini project template for Java users:</p>
+<div class="highlight-scala"><pre>$ g8 pk11/play-mini-java
+
+# cd into the newly created directory and run with 'sbt run'</pre>
+</div>
+</div>
+<div class="section" id="module-with-misc-sample-projects-for-the-typesafe-stack">
+<h2>Module with Misc Sample Projects for the Typesafe Stack<a class="headerlink" href="#module-with-misc-sample-projects-for-the-typesafe-stack" title="Permalink to this headline">¶</a></h2>
+<p>This module contains of five sample projects.</p>
+<p>For Java:</p>
 <ul class="simple">
-<li>In the <tt class="docutils literal"><span class="pre">Uninstaller</span></tt> directory contains an uninstaller program that can be used to fully remove the typesafe-stack.</li>
-<li>In the <tt class="docutils literal"><span class="pre">bin</span></tt> directory we have all the scripts, both for Scala and Akka.</li>
-<li>In the <tt class="docutils literal"><span class="pre">config</span></tt> directory we have Akka&#8217;s configuration files, e.g. <tt class="docutils literal"><span class="pre">akka.conf</span></tt> and the reference config <tt class="docutils literal"><span class="pre">akka-reference.conf</span></tt>.</li>
-<li>In the <tt class="docutils literal"><span class="pre">deploy</span></tt> directory you put Akka applications you want to be loaded by the Akka Microkernel</li>
-<li>In the <tt class="docutils literal"><span class="pre">doc</span></tt> directory we have the documentation.</li>
-<li>In the <tt class="docutils literal"><span class="pre">lib</span></tt> directory we have all the JARs, both Scala, Akka and their dependency JARs.</li>
-<li>In the <tt class="docutils literal"><span class="pre">man</span></tt> directory we have Unix documentation pages for all Scala scripts located in the <tt class="docutils literal"><span class="pre">bin</span></tt> directory.</li>
-<li>In the <tt class="docutils literal"><span class="pre">misc</span></tt> directory we have some tool for Scala.</li>
-<li>In the <tt class="docutils literal"><span class="pre">src</span></tt> directory we have all sources&#8217; JARs, both for Scala and Akka.</li>
+<li>comet-clock</li>
+<li>play-empty</li>
 </ul>
+<p>For Scala:</p>
+<ul class="simple">
+<li>akka-chat</li>
+<li>pi-calculator</li>
+<li>play-mini</li>
+</ul>
+<p>Check them initial-delayout with:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="n">$</span> <span class="n">g8</span> <span class="n">typesafehub</span><span class="o">/</span><span class="n">stack</span><span class="o">-</span><span class="n">examples</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="templates-for-the-getting-started-guides">
+<h2>Templates for the Getting Started Guides<a class="headerlink" href="#templates-for-the-getting-started-guides" title="Permalink to this headline">¶</a></h2>
+<p>You can also install the &#8220;Getting Started with Akka&#8221; and  &#8220;Getting Started with Play&#8221; tutorial templates - both with one for Scala and one for Java.</p>
+<p>Akka tutorial for Scala:</p>
+<div class="highlight-scala"><pre>$ g8 typesafehub/akka-first-tutorial-scala
+
+# cd into the newly created directory and run with 'sbt run'</pre>
+</div>
+<p>Akka tutorial for Java:</p>
+<div class="highlight-scala"><pre>$ g8 typesafehub/akka-first-tutorial-java
+
+# cd into the newly created directory and run with 'mvn compile exec:java'</pre>
+</div>
+<p>Play tutorial for Scala:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="n">$</span> <span class="n">g8</span> <span class="n">typesafehub</span><span class="o">/</span><span class="n">play</span><span class="o">-</span><span class="n">scala</span>
+</pre></div>
+</div>
+<p>Play tutorial for Java:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="n">$</span> <span class="n">g8</span> <span class="n">typesafehub</span><span class="o">/</span><span class="n">play</span><span class="o">-</span><span class="n">java</span>
+</pre></div>
+</div>
+</div>
 </div>
 
 
@@ -111,7 +218,7 @@ drwxr-xr-x   7 jboner  staff   238 May  9 13:20 src
 
     <div class="footer">
         &copy; Copyright 2012, Typesafe Inc..
-      Last updated on Mar 08, 2012.
+      Last updated on Mar 13, 2012.
     </div>
   </body>
 </html>

@@ -9,7 +9,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Migration Manager: Step-by-step Guide &mdash; Typesafe Documentation</title>
+    <title>Migration Manager: Step-by-step Guide &mdash; Typesafe Stack Documentation</title>
     
     <link rel="stylesheet" href="../_static/typesafe.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -28,9 +28,9 @@
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <script type="text/javascript" src="../_static/theme_extras.js"></script>
-    <link rel="top" title="Typesafe Documentation" href="../index.html" />
+    <link rel="top" title="Typesafe Stack Documentation" href="../index.html" />
     <link rel="up" title="Tutorials" href="index.html" />
-    <link rel="prev" title="Getting Started Tutorial (Java): First Chapter" href="getting-started-first-java.html" /> 
+    <link rel="prev" title="Getting Started With Play (Java)" href="getting-started-with-play-java.html" /> 
   </head>
   <body>
       <div class="header">
@@ -41,7 +41,7 @@
       <div class="topnav">
       
         <p>
-        «&#160;&#160;<a href="getting-started-first-java.html">Getting Started Tutorial (Java): First Chapter</a>
+        «&#160;&#160;<a href="getting-started-with-play-java.html">Getting Started With Play (Java)</a>
         &#160;&#160;::&#160;&#160;
         <a class="uplink" href="../index.html">Contents</a>
         </p>
@@ -54,7 +54,7 @@
 <span id="id1"></span><h1>Migration Manager: Step-by-step Guide<a class="headerlink" href="#migration-manager-step-by-step-guide" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="introduction">
 <h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
-<p>Welcome to the step-by-step guide to the Migration Manager(MiMa).</p>
+<p>Welcome to the step-by-step guide to the Migration Manager (MiMa).</p>
 <p>MiMa can report binary modifications that may lead the JVM throwing a <a class="reference external" href="http://download.oracle.com/javase/6/docs/api/java/lang/LinkageError.html">java.lang.LinkageError</a> at runtime. LinkageError are usually the consequence of modifications in classes/members signature.</p>
 <p>MiMa compares all classfiles of two released libraries and reports all source of incompatibilities that may lead to a LinkageError. Given that information, you can easily locate the sources of incompatibilities and take the necessary steps to eliminate them. MiMa provides you, the Libraries maintainers, with a tool that can greatly automates and simplifies the process of ensuring the release-to-release binary compatibility of your libraries.</p>
 <p>A key aspect of MiMa to be aware of is that it only looks for syntactic binary incompatibilities. The semantic binary incompatibilities (such as adding or removing a method invocation) are not considered. This is a pragmatic approach as it is up to you, the library maintainer, to make sure that no semantic changes have occurred between two binary compatible releases. If a semantic change occurred, then you should make sure to provide this information as part of the new release change&#8217;s list.</p>
@@ -104,7 +104,7 @@ Java HotSpot(TM) 64-Bit Server VM (build 19.1-b02-334, mixed mode)
       <div class="bottomnav">
       
         <p>
-        «&#160;&#160;<a href="getting-started-first-java.html">Getting Started Tutorial (Java): First Chapter</a>
+        «&#160;&#160;<a href="getting-started-with-play-java.html">Getting Started With Play (Java)</a>
         &#160;&#160;::&#160;&#160;
         <a class="uplink" href="../index.html">Contents</a>
         </p>
@@ -113,7 +113,7 @@ Java HotSpot(TM) 64-Bit Server VM (build 19.1-b02-334, mixed mode)
 
     <div class="footer">
         &copy; Copyright 2012, Typesafe Inc..
-      Last updated on Mar 08, 2012.
+      Last updated on Mar 13, 2012.
     </div>
   </body>
 </html>

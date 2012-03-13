@@ -1,0 +1,300 @@
+.. _getting-started-with-play-java:
+
+Getting Started With Play (Java)
+================================
+
+This small tutorial is going to teach you how to create a Hello World application with a twist using Play 2 and Scala.
+
+
+Prerequisites
+-------------
+
+Before we can do that we need to install `giter8` (``g8``) and `simple build tool` 
+(``sbt``). In case you have not done that yet you can find the instructions in the 
+Typesafe Stack installation guide: :ref:`downloading-installing`.
+
+
+Let's Play!
+-----------
+
+The first thing we need to do is create a project template::
+
+  g8 typesafehub/play-java
+
+Assuming you went with the default application name::
+
+  cd my_app
+
+Now let's run the development server and checkout the welcome page::  
+
+  sbt
+  > help play
+  > run
+
+Going to ``http://localhost:9000`` should show you Play's welcome page.
+
+.. note::
+
+    You can find Play2's documentation online `here <http://playframework.org/documentation/2.0>`_.
+  
+
+A Play 2 application
+--------------------
+
+A typical Play application looks like this::
+
+  conf/application.conf -> application specific configuration
+  conf/routes           -> request action mapping is configured in this file
+  conf/play.plugins     -> you can register new custom plugins here
+  test                  -> integration and unit tests should come here
+  app/controllers       -> location of controllers
+  app/models            -> location of models
+  app/views             -> location of views
+
+Now that we have an application app and running and we understand how a project is laid out, it's time to start hacking!
+
+First, let's delete the welcome pages::
+
+  rm app/controllers/Application.java
+  rm app/views/index.scala.html
+  rm app/views/main.scala.html
+  rm conf/routes
+
+The next step is to define the request action mapping (routes).
+
+Routes
+------
+
+The route file(``conf/routes``) is the heart of every Play application.
+
+Certain parts of the URL can be passed to controller methods as arguments, however in this simple example we will just map ``/`` to the ``index`` method, ``/hello`` to ``sayHello`` and finally, assets will be served by a predefined controller ``Assets``.
+
+
+.. code-block:: text
+
+  # Home page
+  GET     /                           controllers.Application.index()
+
+  # Hello action
+  GET     /hello                      controllers.Application.sayHello()
+
+  # Map static resources from the /public folder to the /assets URL path
+  GET     /assets/*file               controllers.Assets.at(path="/public", file)
+
+After you are done, just refresh the browser. You should see compilation errors complaining about missing controller methods. That's OK for now, we will fix this later.
+
+.. note::
+
+    Play's smart development console lets you compile classes, routes, templates and javascript on the fly. That is, now extra compilation step is necessary, just refresh the browser and you are ready to go.
+
+Now let's create our first model.
+
+Models
+------
+
+Most applications have some sort of domain models. Domain models can be tied to databases, modern NoSQL data stores, business logic or forms. For our Hello World app first we'd need to define a form. Play managed forms come with validation support.
+
+.. code-block:: java
+
+    package models;
+
+    import play.data.*;
+    import play.data.validation.Constraints.*;
+
+    //app/models/HelloForm.java
+    public class HelloForm {
+        @Required public String name;
+        @Required @Min(1) @Max(100) public Integer repeat;
+        public String color;
+    } 
+
+Here we defined a form (``HelloForm``), with two mandatory fields and one optional. The validation constraints are represented as annotations.
+
+Let's move on to the views.
+
+
+Views
+------
+
+Play comes with a Scala-based template engine that provides type and compiled checked templates. While it's very easy to use any templating solution with Play we will stick to the one that comes with the framework.
+
+First we are going to create the layout file. 
+
+(Layout files should be named as ``main.scala.html`` by convention) 
+
+.. code-block:: scala
+
+  @(title: String)(content: Html)
+
+  <!DOCTYPE html>
+
+  <html>
+      <head>
+          <title>@title</title>
+          <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/main.css")">
+          <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
+          <script src="@routes.Assets.at("javascripts/jquery-1.6.4.min.js")" type="text/javascript"></script>
+      </head>
+      <body>
+
+          <header>
+              <a href="@routes.Application.index">@title</a>
+          </header>
+
+          <section>
+              @content
+          </section>
+
+      </body>
+  </html>
+
+Since Play templates statically typed, they always need to start with variable declaration (in this case we define a string title and a html snippet called content). You might also notice the magic ``@`` sign which tells Play that a Scala expression or method call will follow.
+
+Now let's reuse the layout.
+
+.. code-block:: scala
+
+  @(helloForm: Form[(String,Int,Option[String])])
+
+  @import helper._
+
+  @main(title = "The 'helloworld' application") {
+
+      <h1>Configure your 'Hello world':</h1>
+
+      @form(action = routes.Application.sayHello, args = 'id -> "helloform") {
+
+          @inputText(
+              field = helloForm("name"),
+              args = '_label -> "What's your name?", 'placeholder -> "World"
+          )
+
+          @inputText(
+              field = helloForm("repeat"),
+              args = '_label -> "How many times?", 'size -> 3, 'placeholder -> 10
+          )
+
+          @select(
+              field = helloForm("color"), 
+              options = options(
+                  "" -> "Default",
+                  "red" -> "Red",
+                  "green" -> "Green",
+                  "blue" -> "Blue"
+              ),
+              args = '_label -> "Choose a color"
+          )
+
+          <p class="buttons">
+              <input type="submit" id="submit">
+          <p>
+      }
+  }
+  
+Here we reused the layout (via ``@main``) and also defined a form via play's form helper. Finally if the user submits the form we will display this result page.
+
+.. code-block:: scala
+
+  @(name: String, repeat: Int, color: Option[String])
+
+  @main("Here is the result:") {
+
+      <ul style="color: @color.getOrElse("inherited")">
+          @for(_ <- 1 to repeat) {
+              <li>Hello @name!</li>
+          }
+      </ul>
+
+      <p class="buttons">
+          <a href="@routes.Application.index">Back to the form</a>
+      </p>
+  }  
+
+Here we are using Play's template engine's for loop to iterate over ``repeat`` and print ``@name`` ``repeat`` number of times.
+
+Now let's write the controller code which should tie things together!
+
+Controllers should be kept in controllers package by convention. They also extend ``play.mvc.Controller``.
+
+Controllers
+-----------
+
+.. code-block:: java
+
+  package controllers;
+
+  import play.*;
+  import java.util.*;
+  import play.mvc.*;
+
+  import models.*;
+  import views.html.*;
+
+  public class Application extends Controller {
+
+   public static Result index() {
+        return ok(
+            index.render(form(HelloForm.class))
+        );
+    }
+  
+    public static Result sayHello() {
+        Form<Hello> form = form(HelloForm.class).bindFromRequest();
+        if (form.hasErrors()) {
+            return badRequest(index.render(form));
+        } else {
+            Hello data = form.get();
+            return ok(
+                hello.render(data.name, data.repeat, data.color)
+            );
+        }
+    }
+  }
+
+A Play controller method should return a ``play.mvc.Result``.
+``index`` simply renders our index page (notice the naming convention how ``index.scala.html`` template got compiled into ``views.html.index`` class).  ``sayHello`` is a bit more complicated. 
+
+It uses our previously defined ``HelloForm`` to bind the values from the request via the ``form(...).bindFormRequest`` helper. After that we either send back the form with errors or render the result page with the extracted values. As you could see form handling and validation are extremely easy things to do in Play 2. 
+
+But wait! We are not done yet. As good agile developers, we still have a remaining task: we need to write a test for our awesome Hello World app.
+
+Play supports both unit and integration tests. Integrations tests are firing up Play applications and you can test your app via a browser, while unit tests allow you to test only a certain aspect of your application. In this case we will create a ``IntegrationTest`` for our application.
+
+IntegrationTest
+---------------
+
+.. code-block:: java
+
+  package test;
+
+  import org.junit.*;
+
+  import play.mvc.*;
+  import play.test.*;
+  import play.libs.F.*;
+  
+  public class IntegrationTest {
+
+      @Test
+      public void inServer() {
+          running(testServer(3333), HTMLUNIT, new Callback<TestBrowser>() {
+              public void invoke(TestBrowser browser) {
+                  browser.goTo("http://localhost:3333/");
+
+                  assertThat(browser.$("h1").first.getText()).isEqualTo("Configure your 'Hello world':");
+
+                  browser.$("#name").text("Bob");
+                  browser.$("#submit").click();
+                  assertThat(browser.$("dl.error").size()).isEqualTo(1);
+                  assertThat(browser.$("#name").first.getValue()).isEqualTo("Bob");
+              }
+          });
+      }
+  }      
+
+
+As you can see we are firing up our application using a ``TestServer`` that's using port ``3333`` and `HTMLUNIT` (which is essentially a headless browser). After that we test whether certain html elements were present on the page.
+
+And that's it! 
+
+The full sample application can be downloaded from `here <github.com/playframework/Play20/samples/java/helloword>`_.

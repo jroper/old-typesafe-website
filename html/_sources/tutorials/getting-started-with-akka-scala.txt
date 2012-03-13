@@ -1,22 +1,20 @@
+.. _getting-started-with-akka-scala:
 
-.. _getting-started-first-scala:
-
-#################################################
- Getting Started Tutorial (Scala): First Chapter
-#################################################
-
+##################################
+ Getting Started With Akka (Scala)
+##################################
 
 Introduction
 ============
 
-Welcome to the first tutorial on how to get started with Akka and Scala. We
+Welcome to the first tutorial on how to get started with `Akka <http://akka.io>`_ and Scala. We
 assume that you already know what Akka and Scala are and will now focus on the
 steps necessary to start your first project.
 
 There are two variations of this first tutorial:
 
 - creating a standalone project and run it from the command line
-- creating a SBT (Simple Build Tool) project and running it from within SBT
+- creating a `sbt` (simple build tool) project and running it from within `sbt`
 
 Since they are so similar we will present them both.
 
@@ -40,251 +38,90 @@ sent out to each worker actor to be processed. When each worker has processed
 its chunk it sends a result back to the master which aggregates the total
 result.
 
+
+Create the project
+==================
+
+The simplest way to get started is to install the Typesafe ``akka-scala-sbt`` 
+project template. This will install a basic Akka project that we can use as a
+start. 
+
+Before we can do that we need to install `giter8` (``g8``) and `simple build tool` 
+(``sbt``). In case you have not done that yet you can find the instructions in the 
+Typesafe Stack installation guide: :ref:`downloading-installing`.
+
+Let's create the Akka starter project from the `giter8` template::
+
+  g8 typesafehub/akka-scala-sbt
+
+  Akka 2.0 Project Using Scala and sbt
+
+  organization [org.example]: akka.tutorial
+  package [org.example]: akka.tutorial.first.scala
+  name [Akka Project In Scala]:
+  akka_version [2.0]:
+  version [0.1-SNAPSHOT]:
+
+  Applied typesafehub/akka-scala-sbt.g8 in akka-project-in-scala
+
+Now we have a simple Akka `sbt` project to start hacking in::
+
+  cd akka-project-in-scala 
+  ls
+  README project src
+
+
 Tutorial source code
---------------------
+====================
 
-If you want don't want to type in the code and/or set up an SBT project then you can
-check out the full tutorial from the Akka GitHub repository. It is in the
-``akka-tutorials/akka-tutorial-first`` module. You can also browse it online
-`here`__, with the actual source code `here`__.
+If you want don't want to type in the code and/or set up an `sbt` project 
+from scratch then you can check out the full tutorial from the Typesafe
+`giter8` template repository::
 
-__ https://github.com/akka/akka/tree/master/akka-tutorials/akka-tutorial-first
-__ https://github.com/akka/akka/blob/master/akka-tutorials/akka-tutorial-first/src/main/scala/akka/tutorial/first/scala/Pi.scala
+  g8 typesafehub/akka-first-tutorial-scala
 
-To check out the code using Git invoke the following command and you can then you can navigate down to the tutorial.
 
-On Linux/Unix/Mac systems::
+Setting up The Scala IDE for Eclipse (optional)
+===============================================
 
-    $ git clone git://github.com/akka/akka.git
-    $ cd akka/akka-tutorials/akka-tutorial-first
+If you want to use Eclipse for developing Scala code, you need to install the
+`Scala IDE for Eclipse`_. Follow the instructions in the `Getting Started`__ guide.
+If you haven't used Eclipse before, make sure you watch the ``Features Overview`` screencast
+on the `Scala IDE homepage`_ homepage
 
-On Windows systems::
+__ http://scala-ide.org/docs/user/gettingstarted.html
 
-    C:\Users\jboner\src> git clone git://github.com/akka/akka.git
-    C:\Users\jboner\src> cd akka\akka-tutorials\akka-tutorial-first
+You can start right away and create a ``New Scala Project`` and add ``akka-actor-2.0.jar.`` as
+on your ``Java Build Path``, but if you are already using ``sbt``, you can use the
+`sbteclipse`__ plugin to generate an Eclipse project from the sbt project definition.
+To install a new ``sbt`` plugin add it to your project by pasing the following line
+in ``project/sbteclipse.sbt``.::
 
-Prerequisites
-=============
+    addSbtPlugin("com.typesafe.sbteclipse" % "sbteclipse-plugin" % "2.0.0")
 
-This tutorial assumes that you have Java 1.6 or later installed on you machine
-and ``java`` on your ``PATH``. You also need to know how to run commands in a
-shell (ZSH, Bash, DOS etc.) and a decent text editor or IDE to type in the Scala
-code.
 
-You need to make sure that ``$JAVA_HOME`` environment variable is set to the
-root of the Java distribution. You also need to make sure that the
-``$JAVA_HOME/bin`` is on your ``PATH``.
+__ https://github.com/typesafehub/sbteclipse
 
-On Linux/Unix/Mac systems::
+.. note::
 
-    $ export JAVA_HOME=..root of Java distribution..
-    $ export PATH=$PATH:$JAVA_HOME/bin
+    Make sure that ``sbteclipse.sbt`` is inside your ``project/`` subdirectory, and **not**
+    in your base directory (or in ``build.sbt``)
 
-You can test your installation by invoking ``java``::
+Now you can generate the project definition by typing ``eclipse`` in the ``sbt`` console::
 
-    $ java -version
-    java version "1.6.0_24"
-    Java(TM) SE Runtime Environment (build 1.6.0_24-b07-334-10M3326)
-    Java HotSpot(TM) 64-Bit Server VM (build 19.1-b02-334, mixed mode)
+    > eclipse
+    [info] About to create Eclipse project files for your project(s).
+    [info] Updating {file:/Users/dragos/workspace/git/akka/akka-tutorials/akka-tutorial-first/}default-c10195...
+    [info] Resolving org.scala-lang#scala-library;2.9.1 ...
+    [info] Resolving com.typesafe.akka#akka-actor;2.0 ...
+    [info] Done updating.
+    [info] Successfully created Eclipse project files for project(s): My Project
 
-On Windows systems::
+Next you need to import this project in Eclipse, by choosing ``Eclipse/Import.. Existing Projects into Workspace``. Navigate to the directory where you defined your SBT project and choose import:
 
-    C:\Users\jboner\src\akka> set JAVA_HOME=..root of Java distribution..
-    C:\Users\jboner\src\akka> set PATH=%PATH%;%JAVA_HOME%/bin
+.. image:: ../images/import-project.png
 
-You can test your installation by invoking ``java``::
-
-    C:\Users\jboner\src\akka> java -version
-    java version "1.6.0_24"
-    Java(TM) SE Runtime Environment (build 1.6.0_24-b07-334-10M3326)
-    Java HotSpot(TM) 64-Bit Server VM (build 19.1-b02-334, mixed mode)
-
-Downloading and installing Akka
-===============================
-
-To build and run the tutorial sample from the command line, you have to download
-Akka. If you prefer to use SBT to build and run the sample then you can skip this
-section and jump to the next one.
-
-Let's get the ``akka-2.0.zip`` distribution of Akka from
-http://akka.io/downloads/ which includes everything we need for this
-tutorial. Once you have downloaded the distribution unzip it in the folder you
-would like to have Akka installed in. In my case I choose to install it in
-``/Users/jboner/tools/``, simply by unzipping it to this directory.
-
-You need to do one more thing in order to install Akka properly: set the
-``AKKA_HOME`` environment variable to the root of the distribution. In my case
-I'm opening up a shell, navigating down to the distribution, and setting the
-``AKKA_HOME`` variable.
-
-On Linux/Unix/Mac systems::
-
-    $ cd /Users/jboner/tools/akka-2.0
-    $ export AKKA_HOME=`pwd`
-    $ echo $AKKA_HOME
-    /Users/jboner/tools/akka-2.0
-
-On Windows systems::
-
-    C:\Users\jboner\src\akka> cd akka-2.0
-    C:\Users\jboner\src\akka\akka-2.0> set AKKA_HOME=%cd%
-    C:\Users\jboner\src\akka\akka-2.0> echo %AKKA_HOME%
-    C:\Users\jboner\src\akka\akka-2.0
-
-The distribution looks like this.
-
-On Linux/Unix/Mac systems::
-
-    $ ls -1
-    bin
-    config
-    deploy
-    doc
-    lib
-    src
-
-On Windows systems::
-
-    C:\Users\jboner\src\akka\akka-2.0> dir
-    bin
-    config
-    deploy
-    doc
-    lib
-    src
-
-- In the ``bin`` directory we have scripts for starting the Akka Microkernel.
-- In the ``config`` directory we have the Akka conf files.
-- In the ``deploy`` directory we can place applications to be run with the microkernel.
-- In the ``doc`` directory we have the documentation, API, and doc JARs.
-- In the ``lib`` directory we have the Scala and Akka JARs.
-- In the ``src`` directory we have the source JARs for Akka.
-
-The only JAR we will need for this tutorial (apart from the
-``scala-library.jar`` JAR) is the ``akka-actor-2.0.jar`` JAR in the ``lib/akka``
-directory. This is a self-contained JAR with zero dependencies and contains
-everything we need to write a system using Actors.
-
-Akka is very modular and has many JARs for containing different features. The
-modules are:
-
-- ``akka-actor`` -- Actors
-
-- ``akka-remote`` -- Remote Actors
-
-- ``akka-slf4j`` -- SLF4J Event Handler Listener for logging with SLF4J
-
-- ``akka-testkit`` -- Toolkit for testing Actors
-
-- ``akka-kernel`` -- Akka microkernel for running a bare-bones mini application server
-
-- ``akka-durable-mailboxes`` -- Durable mailboxes: file-based, MongoDB, Redis, Zookeeper
-
-- ``akka-amqp`` -- AMQP integration
-
-.. - ``akka-stm-2.0.jar`` -- STM (Software Transactional Memory), transactors and transactional datastructures
-.. - ``akka-camel-2.0.jar`` -- Apache Camel Actors integration (it's the best way to have your Akka application communicate with the rest of the world)
-.. - ``akka-camel-typed-2.0.jar`` -- Apache Camel Typed Actors integration
-.. - ``akka-spring-2.0.jar`` -- Spring framework integration
-
-
-Downloading and installing Scala
-================================
-
-To build and run the tutorial sample from the command line, you have to install
-the Scala distribution. If you prefer to use SBT to build and run the sample
-then you can skip this section and jump to the next one.
-
-Scala can be downloaded from http://www.scala-lang.org/downloads. Browse there
-and download the Scala 2.9.1 release. If you pick the ``tgz`` or ``zip``
-distribution then just unzip it where you want it installed. If you pick the
-IzPack Installer then double click on it and follow the instructions.
-
-You also need to make sure that the ``scala-2.9.1/bin`` (if that is the
-directory where you installed Scala) is on your ``PATH``.
-
-On Linux/Unix/Mac systems::
-
-    $ export PATH=$PATH:scala-2.9.1/bin
-
-On Windows systems::
-
-    C:\Users\jboner\src\akka\akka-2.0> set PATH=%PATH%;scala-2.9.1\bin
-
-You can test your installation by invoking scala.
-
-On Linux/Unix/Mac systems::
-
-    $ scala -version
-    Scala code runner version 2.9.1.final -- Copyright 2002-2011, LAMP/EPFL
-
-On Windows systems::
-
-    C:\Users\jboner\src\akka\akka-2.0> scala -version
-    Scala code runner version 2.9.1.final -- Copyright 2002-2011, LAMP/EPFL
-
-Looks like we are all good. Finally let's create a source file ``Pi.scala`` for
-the tutorial and put it in the root of the Akka distribution in the ``tutorial``
-directory (you have to create it first).
-
-Some tools require you to set the ``SCALA_HOME`` environment variable to the
-root of the Scala distribution, however Akka does not require that.
-
-.. _getting-started-first-scala-download-sbt:
-
-
-Downloading and installing SBT
-==============================
-
-SBT, short for 'Simple Build Tool' is an excellent build system written in
-Scala. It uses Scala to write the build scripts which gives you a lot of
-power. It has a plugin architecture with many plugins available, something that
-we will take advantage of soon. SBT is the preferred way of building software in
-Scala and is probably the easiest way of getting through this tutorial. If you
-want to use SBT for this tutorial then follow the following instructions, if not
-you can skip this section and the next.
-
-To install SBT and create a project for this tutorial it is easiest to follow
-the instructions on https://github.com/harrah/xsbt/wiki/Setup.
-
-Now we need to create our first Akka project. You could add the dependencies
-manually to the build script, but the easiest way is to use Akka's SBT Plugin,
-covered in the next section.
-
-
-Creating an Akka SBT project
-============================
-
-If you have not already done so, now is the time to create an SBT project for
-our tutorial. You do that by adding the following content to ``build.sbt`` file
-in the directory you want to create your project in::
-
-    name := "My Project"
-
-    version := "1.0"
-
-    scalaVersion := "2.9.1"
-
-    resolvers += "Typesafe Repository" at "http://repo.typesafe.com/typesafe/releases/"
-
-    libraryDependencies += "com.typesafe.akka" % "akka-actor" % "2.0"
-
-Create a directory ``src/main/scala`` in which you will store the Scala source
-files.
-
-Not needed in this tutorial, but if you would like to use additional Akka
-modules beyond ``akka-actor``, you can add these as ``libraryDependencies`` in
-``build.sbt``. Note that there must be a blank line between each. Here is an
-example adding ``akka-remote``::
-
-    libraryDependencies += "com.typesafe.akka" % "akka-actor" % "2.0"
-
-    libraryDependencies += "com.typesafe.akka" % "akka-remote" % "2.0"
-
-So, now we are all set.
-
-SBT itself needs a whole bunch of dependencies but our project will only need
-one; ``akka-actor-2.0.jar``. SBT will download that as well.
+Now we have the basis for an Akka Eclipse application, so we can..
 
 
 Start writing the code
@@ -304,6 +141,10 @@ If you are using the command line tools then create the file wherever you
 want. I will create it in a directory called ``tutorial`` at the root of the
 Akka distribution, e.g. in ``$AKKA_HOME/tutorial/Pi.scala``.
 
+.. note::
+
+    You can find Akka's documentation online `here <http://doc.akka.io/docs/akka/2.0/>`_.
+  
 
 Creating the messages
 =====================
@@ -465,7 +306,7 @@ On Linux/Unix/Mac systems::
 
 On Windows systems::
 
-    C:\Users\jboner\src\akka\akka-2.0> scalac -cp lib\akka\akka-actor-2.0.jar Pi.scala
+    C:\Users\jboner\src\akka\akka-project-in-scala> scalac -cp lib\akka\akka-actor-2.0.jar Pi.scala
 
 When we have compiled the source file we are ready to run the application. This
 is done with ``java`` but yet again we need to add the
@@ -479,16 +320,16 @@ On Linux/Unix/Mac systems::
         -cp lib/scala-library.jar:lib/akka/akka-actor-2.0.jar:. \
         akka.tutorial.first.scala.Pi
 
-    Pi approximation:   3.1435501812459323
+    Pi approximation:   3.1415926435897883
     Calculation time:   359 millis
 
 On Windows systems::
 
-    C:\Users\jboner\src\akka\akka-2.0> java \
+    C:\Users\jboner\src\akka\akka-project-in-scala> java \
         -cp lib/scala-library.jar;lib\akka\akka-actor-2.0.jar;. \
         akka.tutorial.first.scala.Pi
 
-    Pi approximation:   3.1435501812459323
+    Pi approximation:   3.1415926435897883
     Calculation time:   359 millis
 
 Yippee! It is working.
@@ -507,7 +348,7 @@ On Linux/Unix/Mac systems::
 
 On Windows systems::
 
-    C:\Users\jboner\src\akka\akka-2.0> sbt
+    C:\Users\jboner\src\akka\akka-project-in-scala> sbt
     > compile
     ...
 
@@ -515,10 +356,24 @@ When this in done we can run our application directly inside SBT::
 
     > run
     ...
-    Pi approximation:   3.1435501812459323
+    Pi approximation:   3.1415926435897883
     Calculation time:   359 millis
 
 Yippee! It is working.
+
+Run it from Eclipse
+-------------------
+
+Eclipse builds your project on every save when ``Project/Build Automatically`` is set. If not, bring you project up to date by clicking ``Project/Build Project``. If there are no compilation errors, you can right-click in the editor where ``Pi`` is defined, and choose ``Run as.. /Scala application``. If everything works fine, you should see.
+
+.. code-block:: text
+
+    Pi estimate:        3.1415926435897883
+    Calculation time:   359 millis
+
+You can also define a new Run configuration, by going to ``Run/Run Configurations``. Create a new ``Scala application`` and choose the tutorial project and the main class to be ``Pi``. You can pass additional command line arguments to the JVM on the ``Arguments`` page.
+
+Once you finished your run configuration, click ``Run``. You should see the same output in the ``Console`` window. You can use the same configuration for debugging the application, by choosing ``Run/Debug History`` or just ``Debug As``.
 
 Overriding Configuration Externally (Optional)
 ==============================================
@@ -554,3 +409,6 @@ variable to for example; 2, 4, 6, 8 etc. to see performance improvement by
 scaling up.
 
 Happy hakking.
+
+.. _Scala IDE for Eclipse: http://scala-ide.org
+.. _Scala IDE homepage: http://scala-ide.org

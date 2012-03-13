@@ -5,7 +5,9 @@ Tutorials
    :maxdepth: 2
 
    getting-started
-   getting-started-first-scala
-   getting-started-first-java
+   getting-started-with-akka-scala
+   getting-started-with-akka-java
+   getting-started-with-play-scala
+   getting-started-with-play-java
    migration-manager-step-by-step-guide
 

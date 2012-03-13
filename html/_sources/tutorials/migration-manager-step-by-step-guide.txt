@@ -6,7 +6,7 @@ Migration Manager: Step-by-step Guide
 Introduction
 ------------
 
-Welcome to the step-by-step guide to the Migration Manager(MiMa).
+Welcome to the step-by-step guide to the Migration Manager (MiMa).
 
 MiMa can report binary modifications that may lead the JVM throwing a `java.lang.LinkageError <http://download.oracle.com/javase/6/docs/api/java/lang/LinkageError.html>`_ at runtime. LinkageError are usually the consequence of modifications in classes/members signature. 
 

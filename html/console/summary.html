@@ -1,0 +1,192 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Summary of the Typesafe Console &mdash; Typesafe Stack Documentation</title>
+    
+    <link rel="stylesheet" href="../_static/typesafe.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/print.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '2.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/theme_extras.js"></script>
+    <link rel="top" title="Typesafe Stack Documentation" href="../index.html" /> 
+  </head>
+  <body>
+      <div class="header">
+        <a href="../index.html">
+          <img class="logo" src="../_static/logo.png" alt="Logo"/>
+        </a>
+      </div>
+      <div class="topnav">
+      
+        <p>
+        <a class="uplink" href="../index.html">Contents</a>
+        </p>
+
+      </div>
+      <div class="content">
+        
+        
+  <div class="section" id="summary-of-the-typesafe-console">
+<h1>Summary of the Typesafe Console<a class="headerlink" href="#summary-of-the-typesafe-console" title="Permalink to this headline">¶</a></h1>
+<p>The Typesafe Subscription includes the Typesafe Console, an enterprise-grade
+dashboard for monitoring your application built on the Typesafe Stack, including
+Akka event-driven middleware. The Typesafe Console is exclusively available to
+Typesafe Subscription customers.</p>
+<p>The Typesafe Console is a tailor-made tracing and monitoring solution for event-driven
+Akka actor based systems. The Typesafe Console captures the events that comprise your
+application’s asynchronous processing, links those events into meaningful trace flows
+across actors and remote nodes, and makes this information actionable to developers
+and operations staff through a rich web-based user interface.</p>
+<p>The Typesafe Console provides insight into usage trends and performance characteristics
+of the running system. The Console enables your staff to optimize system performance and
+detect bottlenecks before they become a problem, but also to understand reasons for current
+or historical problems.</p>
+<p>Typesafe Console monitoring has been carefully designed to be always active in
+high-volume production environments with a minimal impact on performance. For
+high transaction rate systems it provides measurement sampling to reduce the
+overhead and amount of data.</p>
+<p>In addition to the web user interface, aggregated metrics and detailed trace
+flows are also accessible through a REST and JMX API, for easy integration with third
+party monitoring and operations tools. Both historical and current monitoring
+information is available, which makes it possible to compare across time and
+analyze trends. The information can be scoped: by node, groups of actors, or
+even drilling down to individual actors.</p>
+<p>The Typesafe Console includes probes to collect the following information from
+a Typesafe Stack based system:</p>
+<blockquote>
+<div><ul class="simple">
+<li>message rates and peaks</li>
+<li>individual trace events linked as trace trees or spans</li>
+<li>latency between predefined or user defined points</li>
+<li>latency distributions</li>
+<li>actor supervisor hierarchies</li>
+<li>actor mailbox queue size and delays</li>
+<li>actor message dispatcher status</li>
+<li>status of remoting and system errors</li>
+<li>metadata about the system</li>
+<li>JVM and OS health</li>
+</ul>
+</div></blockquote>
+<p>You can look at the console for a live demo application <a class="reference external" href="http://console-demo.typesafe.com">here</a>.</p>
+<p>Please contact <em>info&#64;typesafe.com</em> for more information or trial of the Typesafe Console.</p>
+<div class="section" id="graphical-console">
+<h2>Graphical Console<a class="headerlink" href="#graphical-console" title="Permalink to this headline">¶</a></h2>
+<p>This is what the dashboard looks like. Key metrics visualized in nice-looking graphs,
+animations and numbers.</p>
+<img alt="../_images/console_first.png" src="../_images/console_first.png" />
+<p>And here’s a closer look at the system overview, which displays information about the whole system.</p>
+<img alt="../_images/console_system_overview.png" src="../_images/console_system_overview.png" />
+<p>A node corresponds to a ActorSystem, and typically also a JVM.
+The circle gives a quick overview of the current health of the node, and if any
+errors have occurred. Details about the errors, including the full tree of trace
+events are one click away.</p>
+<img alt="../_images/console_node_expanded.png" src="../_images/console_node_expanded.png" />
+<p>Actors can be grouped into logical units using tags, and statistics are aggregated
+for all actors associated with a given tag.</p>
+<p>Another interesting way of grouping statistics for the actors is by their message
+dispatcher. Insight to the dispatcher status, such as number of active threads,
+is also available.</p>
+<p>At the lowest level of detail you can see individual actors.</p>
+</div>
+<div class="section" id="how-to-find-a-bottleneck">
+<h2>How to Find a Bottleneck<a class="headerlink" href="#how-to-find-a-bottleneck" title="Permalink to this headline">¶</a></h2>
+<p>Let&#8217;s walk through one of many useful features of the console.</p>
+<p>Mailbox queues are interesting to monitor in an actor system. An increasing number of messages waiting in
+mailboxes is an indication of a problem. If mailboxes are growing constantly it is a fatal problem
+(memory will be exhausted).</p>
+<p>Directly in the system overview pane you see <em>Max mailbox size</em>. In this example, the value is not
+very high, but several messages are waiting in the queue. The <em>Max time in mailbox</em>
+also makes us curious, because a half second of waiting time is more than we would expect.</p>
+<img alt="../_images/tour_bottleneck1.png" src="../_images/tour_bottleneck1.png" />
+<p>We click on the <em>Max mailbox size</em> or <em>Max time in mailbox</em> value to go directly to the actor with the
+potential problem.</p>
+<p>In the graphs for the mailbox we can see that we have peaks in both the size and wait time, and it
+looks like they correlate with the peaks in the message throughput. The good news is that the actor is
+capable of processing the queue before the next peak of messages. The mailbox size is not increasing
+continually so it&#8217;s not a big worry, but the application would not be able to handle a sustained
+load corresponding to the message rate of the peaks.</p>
+<img alt="../_images/tour_bottleneck2.png" src="../_images/tour_bottleneck2.png" />
+<p>Let&#8217;s compare with another actor. As you see the mailbox graphs for ActorA and ActorB looks very
+different. Note the scale of the y-axis.</p>
+<img alt="../_images/tour_bottleneck3.png" src="../_images/tour_bottleneck3.png" />
+</div>
+<div class="section" id="technical-details">
+<h2>Technical Details<a class="headerlink" href="#technical-details" title="Permalink to this headline">¶</a></h2>
+<p>The monitoring backend is highly influenced by a paper from Google which
+outlines <a class="reference external" href="http://research.google.com/pubs/pub36356.html">Dapper</a>, a highly scalable tracing service
+for distributed systems.</p>
+<p>In short, metadata is added to the messages as they flow through the
+system, both across component boundaries as well as across the network. This
+means that it is possible to follow message chains in the distributed
+system. All these trace events are captured in a very efficient way using a
+combination of thread local state and local buffering before they are emitted to
+storage and off-line analysis.</p>
+<img alt="../_images/modules.png" src="../_images/modules.png" />
+<p>Trace data is collected in the application using an instrumented version
+of Akka. The trace events are written to storage and consumed by an analysis
+server to produce aggregated statistics. The analytics is performed close to
+real-time, but off-line from the application.
+The information is visualized in the graphical console.</p>
+<p>All information is also available through a REST API, which is useful for integration with
+other monitoring tools or for developing your own dashboard.
+Most information is also available as JMX MBeans.
+Please see the <a class="reference external" href="http://console-demo.typesafe.com/monitoring/api.html">REST API Description</a> for
+more on the available APIs.</p>
+<p>There are, at present, three ways of persisting the trace events:</p>
+<ul class="simple">
+<li>Writing directly to <a class="reference external" href="http://www.mongodb.org">MongoDB</a></li>
+<li>Sending to a remote actor, which writes to MongoDB</li>
+<li>Sending to a <a class="reference external" href="https://cwiki.apache.org/FLUME/">Flume</a> agent, which
+transports to a Flume collector, which writes to MongoDB</li>
+</ul>
+<p>A span is the path between two trace events; especially the duration between these events
+is interesting. One typical, built-in, span type is the time to send and process messages for actors.
+It&#8217;s also possible to define application specific markers for spans that start and end in any
+location in the message trace, i.e. it may span over several actors.
+Statistics will be calculated for this in the same way as the built-in span types.</p>
+<p>The graphical console has been developed in collaboration with <a class="reference external" href="http://www.zenexity.com/">Zenexity</a> and
+the console itself is built with <a class="reference external" href="http://www.playframework.org/2.0">Play 2.0</a> and
+<a class="reference external" href="http://www.scala-lang.org/">Scala</a>.</p>
+<p>The tracing and monitoring solution has been developed with <a class="reference external" href="http://www.scala-lang.org/">Scala</a>,
+<a class="reference external" href="http://akka.io/">Akka 2.0</a>, and <a class="reference external" href="https://github.com/typesafehub/play2-mini">Play2 Mini</a>.</p>
+<p>Please see the <a class="reference external" href="http://resources.typesafe.com/docs/console">full documentation</a> of
+the Typesafe Console for more information.</p>
+</div>
+</div>
+
+
+      </div>
+      <div class="bottomnav">
+      
+        <p>
+        <a class="uplink" href="../index.html">Contents</a>
+        </p>
+
+      </div>
+
+    <div class="footer">
+        &copy; Copyright 2012, Typesafe Inc..
+      Last updated on Mar 13, 2012.
+    </div>
+  </body>
+</html>

@@ -1,23 +1,23 @@
 .. _what-is-it:
 
 What is the Typesafe Stack?
-============================================================
+===========================
 
-The Typesafe Stack is a 100% open source, integrated distribution offering Scala and Akka.
+The Typesafe Stack is a modern software platform that makes it easy for developers to build scalable software applications in Java and Scala.
 
-The Typesafe Stack makes it easy for developers to get started building scalable software systems with Scala and Akka.  The Typesafe Stack is based on the most recent stable versions of Scala and Akka, and provides all of the major components needed to develop and deploy Scala and Akka applications.
+The Typesafe Stack is an integrated distribution that includes the Scala programming language, Akka event-driven middleware, and the Play web framework, along with a robust suite of development tools.
+
+The Typesafe Stack makes it easy for developers to get started with Scala, Akka, and Play.  It is complemented by the Typesafe Subscription, which adds commercial support, maintenance, and management tools for production application deployments.
 
 The Typesafe Stack includes:
 
-- The Scala programming language
-- The Scala core libraries, including support for parallel collections (new in Scala 2.9)
-- The Akka Middleware microkernel and core modules, with Scala and Java APIs
-- Scala tool support for text editors like emacs, vim, or gedit
-- PDF and HTML documentation on the Scala programming language, core libraries, and Akka middleware
+- The Scala programming language and standard library
+- The Akka event-driven middleware, with Scala and Java APIs
+- The Play framework for developing real-time Web applications, with Scala and Java APIs
+
 
 The Typesafe Stack is:
 
 - Integrated and simple, with a single download and installer for a complete development and deployment environment
-- Hardened and tested comprehensively for compatibility, stability, and performance
-- Commercially supported by the creators of Scala and Akka and core project committers
-- 100% open source
+- Commercially supported by the creators of Scala, Play and Akka and core project committers
+- 100 % open source
