@@ -295,4 +295,4 @@ As you can see we are firing up our application using a ``TestServer`` that's us
 
 And that's it! 
 
-The full sample application can be downloaded from `here <github.com/playframework/Play20/samples/scala/helloword>`_.
+The full sample application can be downloaded from `here <https://github.com/playframework/Play20/tree/master/samples/scala/helloworld>`_.
