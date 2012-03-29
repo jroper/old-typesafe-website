@@ -67,7 +67,7 @@ Next, open a terminal window and type::
 Universal
 ---------
 
-Download `this zip file <http://typesafe.artifactoryonline.com/typesafe/>`_ and unpack it to your local file system.
+Download `this zip file <http://downloads.typesafe.com/typesafe-stack/2.0/typesafe-stack-universal-2.0.zip>`_ and unpack it to your local file system.
 
 .. _template-projects:
 
