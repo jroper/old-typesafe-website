@@ -59,7 +59,7 @@ And here’s a closer look at the system overview, which displays information ab
 
 .. image:: ../images/console_system_overview.png
 
-A node corresponds to a ActorSystem, and typically also a JVM.
+A node corresponds to a JVM.
 The circle gives a quick overview of the current health of the node, and if any
 errors have occurred. Details about the errors, including the full tree of trace
 events are one click away.
@@ -130,8 +130,8 @@ The information is visualized in the graphical console.
 
 All information is also available through a REST API, which is useful for integration with
 other monitoring tools or for developing your own dashboard.
-Most information is also available as JMX MBeans. 
-Please see the `REST API Description <http://console-demo.typesafe.com/monitoring/api.html>`_ for 
+Most information is also available as JMX MBeans.
+Please see the `REST API Description <http://console-demo.typesafe.com/monitoring/api.html>`_ for
 more on the available APIs.
 
 There are, at present, three ways of persisting the trace events:
