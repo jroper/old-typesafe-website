@@ -15,7 +15,7 @@ After the Stack has been installed you can try it out by opening a terminal wind
 Windows 
 -------
 
-Download and run `this exe file <http://downloads.typesafe.com/typesafe-stack/2.0.1/typesafe-stack-2.0.1.exe>`_. Follow the installer instructions.
+Download and run `this exe file <http://downloads.typesafe.com/typesafe-stack/2.0.2/typesafe-stack-2.0.2.exe>`_. Follow the installer instructions.
 
 
 OSX
@@ -46,7 +46,7 @@ Open a terminal window and type::
 Redhat/CentOS - Download RPM
 ----------------------------
 
-Click on `this link <http://typesafe-repo-2.0.0-1.noarch.rpm>`_ to install the RPM.
+Click on `this link <http://rpm.typesafe.com/typesafe-repo-2.0.0-1.noarch.rpm>`_ to install the RPM.
 
 
 Redhat/CentOS - Yum
@@ -67,7 +67,7 @@ Next, open a terminal window and type::
 Universal
 ---------
 
-Download `this zip file <http://downloads.typesafe.com/typesafe-stack/2.0.1/typesafe-stack-2.0.1.zip>`_ or `this tarball <http://downloads.typesafe.com/typesafe-stack/2.0.1/typesafe-stack-2.0.1.tgz>`_ and unpack it to your local file system.
+Download `this zip file <http://downloads.typesafe.com/typesafe-stack/2.0.2/typesafe-stack-2.0.2.zip>`_ or `this tarball <http://downloads.typesafe.com/typesafe-stack/2.0.2/typesafe-stack-2.0.2.tgz>`_ and unpack it to your local file system.
 
 .. _template-projects:
 
