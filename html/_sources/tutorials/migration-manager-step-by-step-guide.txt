@@ -14,7 +14,7 @@ MiMa compares all classfiles of two released libraries and reports all source of
 
 A key aspect of MiMa to be aware of is that it only looks for syntactic binary incompatibilities. The semantic binary incompatibilities (such as adding or removing a method invocation) are not considered. This is a pragmatic approach as it is up to you, the library maintainer, to make sure that no semantic changes have occurred between two binary compatible releases. If a semantic change occurred, then you should make sure to provide this information as part of the new release's change list.
 
-In addition, it is worth mentioning that binary compatibility does not imply source compatibility, i.e., some of the changes that are considered compatible at the bytecode level may still break a codebase that depends on it. Interestingly, this is not an issue intrinsic to the Scala language.  In the Java language binary compatibility does not imply source compatibility as well.  MiMa focuses on binary compatibility and current provides no insight into source compatibility.
+In addition, it is worth mentioning that binary compatibility does not imply source compatibility, i.e., some of the changes that are considered compatible at the bytecode level may still break a codebase that depends on it. Interestingly, this is not an issue intrinsic to the Scala language.  In the Java language binary compatibility does not imply source compatibility as well.  MiMa focuses on binary compatibility and currently provides no insight into source compatibility.
 
 The current version of MiMa provides an aggresive reporting module for finding all potential binary incompatibilties. 
 
